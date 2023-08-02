@@ -2,11 +2,18 @@ package com.help.hyozason_backend.dto.helpuser;
 import lombok.*;
 
 
-@Getter
-@Setter
-@NoArgsConstructor // 기본 생성자 자동으로 만들어줌
-@ToString //toString 메서드 자동으로 만들어줌
-@Builder
-public class HelpUserDTO {
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Data //get,set 메소드 이용가능하게 하는 어노테이션
+public class HelpUserDTO {
+    long userId;
+    String userEmail;
+    String userToken;
+    String userName;
+    long userAge;
+    String userGender;
+    String userPhone;
+    String userRole;
 }

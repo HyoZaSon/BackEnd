@@ -6,7 +6,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor // 기본 생성자 자동으로 만들어줌
 @ToString //toString 메서드 자동으로 만들어줌
-@Builder
-public class HelpRewardDTO {
 
+public class HelpRewardDTO {
+    long rewardId;
+    long userId;
+    long rewardScore;
 }
