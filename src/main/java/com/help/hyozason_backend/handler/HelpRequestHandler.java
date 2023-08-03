@@ -2,17 +2,11 @@ package com.help.hyozason_backend.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.help.hyozason_backend.dto.helpboard.HelpBoardDTO;
-import com.help.hyozason_backend.dto.helpmessage.HelpMessageDTO;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
-import jakarta.websocket.MessageHandler;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
@@ -22,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 //이 클래스는 소켓 연결이 시작되면 자동으로 콜 됩니다.
 //서비스(비즈니스 로직) 해당 클래스 (소켓 통신 전용)

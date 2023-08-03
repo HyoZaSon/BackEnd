@@ -8,7 +8,7 @@ import lombok.*;
 @ToString //toString 메서드 자동으로 만들어줌
 
 public class HelpRewardDTO {
-    long rewardId;
-    long userId;
-    long rewardScore;
+    private long rewardId;
+    private long userId;
+    private long rewardScore;
 }

@@ -17,12 +17,12 @@ public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
 
     /***
+     *
      * StompHeaderAccessor.wrap으로 message를 감싸면 STOMP의 헤더에 직접 접근할 수 있습니다.
      * 위에서 작성한 클라이언트에서 보낸 JWT가 들어있는 헤더 Authorization을
      * StompHeaderAccessor.getNativeHeader("Authorization") 메서드를 통해 받아올 수 있고
-     * 받아온 헤더의 값은 JWT가 됩니다. 받은 JWT를 검증해 정상적으로 소켓을 사용할 수 있도록 동작합니다.
+     * 클라이언트가 connect 할때 받아온 헤더의 값은 JWT가 됩니다. 받은 JWT를 검증해 정상적으로 소켓을 사용할 수 있도록 동작합니다.
      ***/
-
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel){
@@ -34,4 +34,7 @@ public class StompHandler implements ChannelInterceptor {
         }
         return message;
     }
+
+
+
 }

@@ -8,12 +8,12 @@ import lombok.*;
 @NoArgsConstructor
 @Data //get,set 메소드 이용가능하게 하는 어노테이션
 public class HelpUserDTO {
-    long userId;
-    String userEmail;
-    String userToken;
-    String userName;
-    long userAge;
-    String userGender;
-    String userPhone;
-    String userRole;
+    private long userId;
+    private String userEmail;
+    private String userToken;
+    private String userName;
+    private long userAge;
+    private String userGender;
+    private String userPhone;
+    private String userRole;
 }
