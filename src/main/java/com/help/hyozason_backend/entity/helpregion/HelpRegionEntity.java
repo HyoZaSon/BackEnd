@@ -16,4 +16,10 @@ public class HelpRegionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)//는 JPA에서 기본 키를 자동으로 생성할 때 사용하는 방법 중 하나
     @Column(name="regionId")
     long regionId;
+
+    @Column(name = "regionInfo")
+    String regionInfo;
+
+    @Column(name = "userEmail")
+    String userEmail;
 }
