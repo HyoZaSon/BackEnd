@@ -28,13 +28,13 @@ public class HelpBoardEntity {
     String helpCategory;
 
     @Column(name = "helpAccept")
-    Boolean helpAccept;
+    String helpAccept;
 
     @Column(name="createdAt", nullable = false)
     LocalDateTime createdAt;
 
-    @Column(name = "userId")
-    String userId;
+    @Column(name = "userEmail")
+    String userEmail;
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

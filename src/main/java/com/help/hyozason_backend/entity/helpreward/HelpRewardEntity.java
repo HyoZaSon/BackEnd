@@ -20,6 +20,6 @@ public class HelpRewardEntity {
     @Column(name = "rewardScore")
     int rewardScore;
 
-    @Column(name = "userId")
-    String userId;
+    @Column(name = "userEmail")
+    String userEmail;
 }
