@@ -31,12 +31,12 @@ public class HelpRewardService extends ResponseService {
         }
     }
 
-    public int updateRewards(String userId, int rating) {
-        HelpRewardEntity helpRewardEntity = helpRewardRepository.findByUserId(userId);
+    public int updateRewards(String userEmail, int rating) {
+        HelpRewardEntity helpRewardEntity = helpRewardRepository.findByUserEmail(userEmail);
 
         if (helpRewardEntity == null) {
             helpRewardEntity = new HelpRewardEntity();
-            helpRewardEntity.setUserId(userId);
+            helpRewardEntity.setUserEmail(userEmail);
             helpRewardEntity.setRewardScore(0);
         }
 

@@ -15,9 +15,8 @@ import java.time.LocalDateTime;
 @Table(name = "HelpLocation")
 public class HelpLocationEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="locationId")
-    long regionId;
+    @Column(name="locationInfo")
+    String locationInfo;
 
     @Column(name = "longitude")
     String longitude;

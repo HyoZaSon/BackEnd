@@ -2,6 +2,7 @@ package com.help.hyozason_backend.handler;
 
 import com.help.hyozason_backend.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.Objects;
 
 @Component
-@RequiredArgsConstructor
 public class StompHandler implements ChannelInterceptor {
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -24,6 +24,10 @@ public class StompHandler implements ChannelInterceptor {
      * 클라이언트가 connect 할때 받아온 헤더의 값은 JWT가 됩니다. 받은 JWT를 검증해 정상적으로 소켓을 사용할 수 있도록 동작합니다.
      ***/
 
+    @Autowired
+    public StompHandler(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel){
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);

@@ -13,6 +13,7 @@ public class HelpRequestDTO {
     private String helpName;
     private String helpCategory;
     private String helpAccept;
+    private String locationInfo;
     private String longitude;
     private String latitude;
 
