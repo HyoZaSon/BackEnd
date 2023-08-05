@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -19,9 +20,23 @@ public class HelpBoardEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)//는 JPA에서 기본 키를 자동으로 생성할 때 사용하는 방법 중 하나
     @Column(name="helpId")
     long helpId;
-    long userId;
+
+    @Column(name = "helpName")
     String helpName;
+
+    @Column(name = "helpCategory")
     String helpCategory;
+
+    @Column(name = "helpAccept")
     String helpAccept;
 
+    @Column(name="createdAt", nullable = false)
+    LocalDateTime createdAt;
+
+    @Column(name = "userEmail")
+    String userEmail;
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
 }
