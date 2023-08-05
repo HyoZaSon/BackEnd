@@ -8,5 +8,11 @@ import lombok.*;
 @ToString //toString 메서드 자동으로 만들어줌
 @Builder
 public class HelpRegionDTO {
+    String regionInfo;
+    String userEmail;
 
+    public HelpRegionDTO(String regionInfo, String userEmail) {
+        this.regionInfo = regionInfo;
+        this.userEmail = userEmail;
+    }
 }
