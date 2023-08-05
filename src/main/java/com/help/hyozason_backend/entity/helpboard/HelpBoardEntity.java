@@ -36,6 +36,10 @@ public class HelpBoardEntity {
     @Column(name = "userEmail")
     String userEmail;
 
+    @Column(name = "locationInfo")
+    String locationInfo;
+
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

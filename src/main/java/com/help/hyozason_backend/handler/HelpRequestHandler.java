@@ -5,6 +5,7 @@ import com.help.hyozason_backend.dto.helpboard.HelpBoardDTO;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -21,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 //서비스(비즈니스 로직) 해당 클래스 (소켓 통신 전용)
 // stomp 적용으로 해당 클래스는 컨트롤러로 바꿔야함
 @Slf4j
+@Component
 public class HelpRequestHandler extends TextWebSocketHandler {
 
     // 로그인 한 전체 session 리스트

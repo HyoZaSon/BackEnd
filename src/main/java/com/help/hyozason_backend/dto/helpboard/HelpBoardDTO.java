@@ -13,9 +13,10 @@ import java.time.LocalDateTime;
 @Builder
 public class HelpBoardDTO {
     private long helpId;
-    private String helpUserEmail;
+    //private String helpUserEmail;
     private String helpName;
     private String helpCategory;
     private String helpAccept;
-    LocalDateTime createdAt;
+    private String locationInfo;
+    private LocalDateTime createdAt;
 }

@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
 @ToString //toString 메서드 자동으로 만들어줌
 
 public class HelpLocationDTO {
-    String locationId;
-    String longitude;
-    String latitude;
-    LocalDateTime createdAt;
-    String userEmail;
+    private String locationInfo;
+    private String longitude;
+    private String latitude;
+    private LocalDateTime createdAt;
+    private String userEmail;
 
 }
