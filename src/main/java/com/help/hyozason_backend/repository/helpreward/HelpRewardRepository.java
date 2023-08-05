@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HelpRewardRepository extends JpaRepository<HelpRewardEntity,Long> {
-    HelpRewardEntity findByUserEmail(String userEmail);
+    HelpRewardEntity findByUserId(String userId);
 }

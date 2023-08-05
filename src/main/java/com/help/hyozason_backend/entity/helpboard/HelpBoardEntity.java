@@ -1,13 +1,11 @@
 package com.help.hyozason_backend.entity.helpboard;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.*;
 
 @Entity
 @Builder
@@ -28,17 +26,13 @@ public class HelpBoardEntity {
     String helpCategory;
 
     @Column(name = "helpAccept")
-    String helpAccept;
+    Boolean helpAccept;
 
     @Column(name="createdAt", nullable = false)
     LocalDateTime createdAt;
 
-    @Column(name = "userEmail")
-    String userEmail;
-
-    @Column(name = "locationInfo")
-    String locationInfo;
-
+    @Column(name = "userId")
+    String userId;
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

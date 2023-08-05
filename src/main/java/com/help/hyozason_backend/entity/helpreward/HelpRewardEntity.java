@@ -1,10 +1,10 @@
 package com.help.hyozason_backend.entity.helpreward;
-import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import javax.persistence.*;
 @Entity
 @Builder
 @AllArgsConstructor
@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 public class HelpRewardEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)//는 JPA에서 기본 키를 자동으로 생성할 때 사용하는 방법 중 하나
-    @Column(name="rewardId")
+    @Column(name = "rewardId")
     long rewardId;
 
-    @Column(name = "rewardScore")
+    @Column( name= "rewardScore")
     int rewardScore;
 
-    @Column(name = "userEmail")
-    String userEmail;
+    @Column( name="userId")
+    String userId;
 }

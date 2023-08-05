@@ -1,5 +1,4 @@
 package com.help.hyozason_backend.dto.helpboard;
-import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -12,11 +11,9 @@ import java.time.LocalDateTime;
 @ToString //toString 메서드 자동으로 만들어줌
 @Builder
 public class HelpBoardDTO {
-    private long helpId;
-    //private String helpUserEmail;
-    private String helpName;
-    private String helpCategory;
-    private String helpAccept;
-    private String locationInfo;
-    private LocalDateTime createdAt;
+    String helpName;
+    String helpCategory;
+    boolean helpAccept;
+    LocalDateTime createdAt;
+    String userId;
 }

@@ -1,7 +1,7 @@
 package com.help.hyozason_backend.etc;
 
 
-public abstract class ResponseService {
+public class ResponseService {
     private HelpResponse.ResponseMap result;
     public HelpResponse setResponse(int code, String message, Object object) throws Exception {
         result = new HelpResponse.ResponseMap();
