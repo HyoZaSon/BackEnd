@@ -32,16 +32,16 @@ public class HelpRequestService extends ResponseService {
     private final HelpBoardRepository helpBoardRepository;
     private final HelpLocationRepository helpLocationRepository;
     private final HelpUserRepository helpUserRepository;
-    private final HelpRequestHandler helpRequestHandler;
+    //private HelpRequestHandler helpRequestHandler;
     private final HelpSmsService helpSmsService;
     private final SimpMessageSendingOperations messagingTemplate;
 
     @Autowired
-    public HelpRequestService(HelpBoardRepository helpBoardRepository, HelpLocationRepository helpLocationRepository, HelpUserRepository helpUserRepository, HelpRequestHandler helpRequestHandler, HelpSmsService helpSmsService, SimpMessageSendingOperations messagingTemplate) {
+    public HelpRequestService(HelpBoardRepository helpBoardRepository, HelpLocationRepository helpLocationRepository, HelpUserRepository helpUserRepository, HelpSmsService helpSmsService, SimpMessageSendingOperations messagingTemplate) {
         this.helpBoardRepository = helpBoardRepository;
         this.helpLocationRepository = helpLocationRepository;
         this.helpUserRepository = helpUserRepository;
-        this.helpRequestHandler = helpRequestHandler;
+        //this.helpRequestHandler = helpRequestHandler;
         this.helpSmsService = helpSmsService;
         this.messagingTemplate = messagingTemplate;
     }
@@ -85,7 +85,7 @@ public class HelpRequestService extends ResponseService {
             helpId =helpBoardEntity.getHelpId();
 
             //userEmail을 이용하여 usertable 에서 유저 phone 정보 가져온다.
-            HelpUserEntity helpUserEntity = helpUserRepository.findByEmail(userEmail);
+            HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(userEmail);
 
 
             //여기에 문자 api
@@ -133,7 +133,7 @@ public class HelpRequestService extends ResponseService {
         // 사용자 A 개별 큐로 도움 요청 수락 결과 알림 보내기
         String topicPath = "/topic/request/" + helpRequestId;
 
-        HelpUserEntity helpUserEntity = helpUserRepository.findByEmail(helpEmail); //도움 요청자 정보 확인
+        HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(helpEmail); //도움 요청자 정보 확인
 
         //사용자 A (특정 사용자)에게 메시지 보내기 위한 정보, 메시지 보낼 주소, 메시지 내용
         messagingTemplate.convertAndSendToUser(helpUserEntity.getUserPhone(), topicPath, "도움 요청이 수락되었습니다.");

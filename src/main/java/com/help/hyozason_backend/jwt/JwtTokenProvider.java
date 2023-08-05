@@ -1,7 +1,11 @@
 package com.help.hyozason_backend.jwt;
 
 import io.jsonwebtoken.Jwts;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
+@Component
 public class JwtTokenProvider {
     private String accessSecretKey = "Haesong";
     public void validateToken(String authorization) {

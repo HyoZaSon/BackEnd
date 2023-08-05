@@ -79,7 +79,7 @@ public class HelpRequestController extends ResponseService {
         String token = tokenHeaders != null && !tokenHeaders.isEmpty() ? tokenHeaders.get(0) : null;
         //B 회원 정보 추출
         String userEmail = jwtTokenProvider.getUserPk(token);
-        HelpUserEntity helperUserEntity = helpUserRepository.findByEmail(userEmail);
+        HelpUserEntity helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
 
         //서비스를 통해서 helpAccept 여부 변경
         String helpEmail =  helpRequestService.acceptHelpRequest(helpBoardId);

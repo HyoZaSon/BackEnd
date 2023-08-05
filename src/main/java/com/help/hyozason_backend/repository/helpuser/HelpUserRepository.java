@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HelpUserRepository extends JpaRepository<HelpUserEntity,Long> {
-    HelpUserEntity findByEmail(String userEmail);
+public interface HelpUserRepository extends JpaRepository<HelpUserEntity,String> {
+    HelpUserEntity findByUserEmail(String userEmail);
 
 }

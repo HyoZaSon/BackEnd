@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HelpLocationRepository extends JpaRepository<HelpLocationEntity,Long> {
+public interface HelpLocationRepository extends JpaRepository<HelpLocationEntity,String> {
     Page<HelpLocationEntity> findAll(Pageable pageable);
 }
