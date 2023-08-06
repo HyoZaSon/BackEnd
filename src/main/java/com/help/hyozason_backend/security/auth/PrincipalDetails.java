@@ -11,7 +11,7 @@ import java.util.Collection;
 
 
 public class PrincipalDetails implements UserDetails {
-    private HelpUserEntity helpUser;
+    private final HelpUserEntity helpUser;
 
     public PrincipalDetails(HelpUserEntity member) {
         this.helpUser = member;
@@ -28,7 +28,7 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(helpUser.getRole().toString()));
+        authorities.add(new SimpleGrantedAuthority(helpUser.getUserRole()));
         return authorities;
     }
 
@@ -39,7 +39,8 @@ public class PrincipalDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return helpUser.getEmail();
+
+        return helpUser.getUserEmail();
     }
 
     @Override

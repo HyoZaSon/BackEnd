@@ -5,13 +5,17 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotNull;
+
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data //get,set 메소드 이용가능하게 하는 어노테이션
 @Table(name = "HelpUser")
-public class HelpUserEntity {
+public class HelpUserEntity  {
+
+
     @Id
     @Column(name="userEmail")
     String userEmail;
@@ -34,5 +38,17 @@ public class HelpUserEntity {
     @Column(name = "userRole")
     String userRole;
 
+    private boolean status = true;
+
+    @NotNull
+    private String refreshToken;
+
+    public void changeRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public HelpUserEntity(String email) {
+        this.userEmail = email;
+    }
 
 }

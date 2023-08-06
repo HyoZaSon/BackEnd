@@ -15,4 +15,10 @@ public class HelpUserDTO {
     private String userGender;
     private String userPhone;
     private String userRole;
+
+    private boolean status = true;
+
+    public void updateStatus() {
+        this.status = false;
+    }
 }

@@ -22,7 +22,6 @@ import java.io.IOException;
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
-            // refresh Token이 있다면 refresh Token 사용
             String refreshToken = jwtTokenProvider.resolveRefreshToken((HttpServletRequest) request);
             String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
             if (refreshToken != null && ((HttpServletRequest) request).getRequestURI()

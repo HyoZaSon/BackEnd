@@ -42,9 +42,9 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
-    public String generateAccessToken(Long memberId) {
+    public String generateAccessToken(String email) {
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        claims.put("userEmail", email);
 
         Date now = new Date();
         Date accessTokenExpirationTime = new Date(now.getTime() + TOKEN_VALID_TIME);
@@ -57,14 +57,14 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public MemberResponseDto.TokenInfo generateToken(Long memberId) {
+    public MemberResponseDto.TokenInfo generateToken(String email) {
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        claims.put("userEmail", email);
 
         Date now = new Date();
         Date refreshTokenExpirationTime = new Date(now.getTime() + REF_TOKEN_VALID_TIME);
 
-        String accessToken = generateAccessToken(memberId);
+        String accessToken = generateAccessToken(email);
         String refreshToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now) // 토큰 발행 시간 정보

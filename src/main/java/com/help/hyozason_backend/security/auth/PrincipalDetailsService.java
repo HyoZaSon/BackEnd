@@ -16,8 +16,8 @@ public class PrincipalDetailsService implements UserDetailsService {
     private final HelpUserRepository helpUserRepository;
 
     @Override
-    public PrincipalDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        HelpUserEntity memberEntity = helpUserRepository.findByIdWithStatus(Long.parseLong(username))
+    public PrincipalDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        HelpUserEntity memberEntity = helpUserRepository.findByEmailWithStatus(email)
                 .orElseThrow(() -> new BaseException(MemberErrorCode.EMPTY_MEMBER));
         return new PrincipalDetails(memberEntity);
     }

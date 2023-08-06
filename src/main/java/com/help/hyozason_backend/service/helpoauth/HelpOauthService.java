@@ -1,12 +1,12 @@
-package com.help.hyozason_backend.security.oauth;
-
+package com.help.hyozason_backend.service.helpoauth;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.help.hyozason_backend.etc.ResponseService;
 import com.help.hyozason_backend.exception.AuthErrorCode;
 import com.help.hyozason_backend.exception.BaseException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -14,18 +14,17 @@ import org.springframework.stereotype.Service;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
-
 @Service
 @Slf4j
-public class SocialLoginService {
+@RequiredArgsConstructor
+public class HelpOauthService extends ResponseService {
 
-    @Value("${social.grant-type}")
+    @Value("${grant-type}")
     private String grantType;
-    @Value("${social.kakao.client-id}")
+    @Value("${kakao.client-id}")
     private String kakaoClientId;
-    @Value("${social.kakao.redirect-uri}")
+    @Value("${kakao.redirect-uri}")
     private String kakaoRedirectUrl;
-
 
 
     public String getKaKaoAccessToken(String idToken) throws IOException {
@@ -36,11 +35,6 @@ public class SocialLoginService {
                 "&code=" + idToken;
         return getAccessToken(idToken, reqUrl, parameter);
     }
-
-
-
-
-
 
     public String getAccessToken(String idToken, String requestUrl, String parameter) throws IOException {
         String accessToken = "";
@@ -84,7 +78,6 @@ public class SocialLoginService {
         return new JsonParser().parse(result.toString()).getAsJsonObject().get("kakao_account")
                 .getAsJsonObject().get("email").getAsString();
     }
-
 
     public StringBuilder getEmail(String accessToken, String requestUrl) throws IOException {
         URL url = new URL(requestUrl);

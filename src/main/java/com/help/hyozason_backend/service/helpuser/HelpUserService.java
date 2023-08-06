@@ -1,72 +1,61 @@
 package com.help.hyozason_backend.service.helpuser;
 
-import com.help.hyozason_backend.dto.helpreward.HelpRewardDTO;
-import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
+
 import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
-import com.help.hyozason_backend.dto.helpuser.MemberRequestDto.RegisterMember;
 import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
-import com.help.hyozason_backend.dto.helpuser.MemberResponseDto.TokenInfo;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
-import com.help.hyozason_backend.etc.ResponseService;
+
 import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.exception.MemberErrorCode;
-import com.help.hyozason_backend.mapper.helpuser.HelpUserMapper;
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
 import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
-import com.help.hyozason_backend.security.oauth.SocialLoginService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.help.hyozason_backend.service.helpoauth.HelpOauthService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import java.io.*;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.springframework.security.config.oauth2.client.CommonOAuth2Provider.GOOGLE;
+
 
 @Service
-public class HelpUserService extends ResponseService {
+@Slf4j
+@RequiredArgsConstructor
+public class HelpUserService  {
 
-
-    private final SocialLoginService socialLoginService;
-    private final HelpUserRepository helpUserRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
+    private final HelpOauthService helpOauthService;
+    private final HelpUserRepository helpUserRepository;
 
-    public void save(HelpUserDTO member) {
-        HelpUserRepository.save(member);
+    public void save(HelpUserEntity member) {
+        helpUserRepository.save(member);
     }
 
-    public HelpUserEntity register(RegisterMember registerMember) {
-        HelpUserDTO member = new HelpUserEntity(
-                registerMember.getEmail(),
-                save(HelpUserMapper.INSTANCE.toEntity(member));
-                //DTO -> Entity 바꾸는 로직 필요
+    public HelpUserEntity register(MemberRequestDto.RegisterMember registerMember) {
+        HelpUserEntity member = new HelpUserEntity(
+                registerMember.getEmail());
+        save(member);
         return member;
     }
 
-    public TokenInfo registerMember(RegisterMember registerMember) {
+    public MemberResponseDto.TokenInfo registerMember(MemberRequestDto.RegisterMember registerMember) {
         checkRegister(registerMember);
         HelpUserEntity member = register(registerMember);
-        TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserId());
+        MemberResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserEmail());
         member.changeRefreshToken(tokenInfo.getRefreshToken());
         return tokenInfo;
     }
 
-    public TokenInfo socialLogin(MemberRequestDto.SocialLoginToken socialLoginToken) throws BaseException, IOException {
+
+    public MemberResponseDto.TokenInfo socialLogin(
+                                                   MemberRequestDto.SocialLoginToken socialLoginToken) throws BaseException, IOException {
         String idToken = socialLoginToken.getIdToken();
-        String email = "";
+        String email = helpOauthService.getKaKaoEmail(helpOauthService.getKaKaoAccessToken(idToken));
 
-         const email = socialLoginService.getKaKaoEmail(socialLoginService.getKaKaoAccessToken(idToken));
-
-
-
-        HelpUserEntity member = HelpUserRepository.findByEmail(email).orElse(null);
+        HelpUserEntity member = helpUserRepository.findByUserEmail(email);
         if (member != null) {
-            TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserId());
+            MemberResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserEmail());
             member.changeRefreshToken(tokenInfo.getRefreshToken());
             return tokenInfo;
         } else {
@@ -76,27 +65,17 @@ public class HelpUserService extends ResponseService {
         }
     }
 
-    public void checkRegister(RegisterMember registerMember) {
-        Boolean flag = memberRepository.existsByEmail(registerMember.getEmail());
+    public void checkRegister(MemberRequestDto.RegisterMember registerMember) {
+        Boolean flag = helpUserRepository.existsByEmail(registerMember.getEmail());
         if (flag) {
             throw new BaseException(MemberErrorCode.DUPLICATE_MEMBER);
         }
-        flag = memberRepository.existsByNickName(registerMember.getEmail());
-        if (flag) {
-            throw new BaseException(MemberErrorCode.DUPLICATE_NICKNAME);
-        }
     }
 
-//    public MemberResponseDto.CheckNickNameRes checkNickName(CheckNickName checkNickName) {
-//        return new MemberResponseDto.CheckNickNameRes(
-//                memberRepository.existsByNickName(checkNickName.getNickName()));
-//    }
-
-
-    public TokenInfo refreshAccessToken(HelpUserEntity member) {
-        return TokenInfo.builder()
-                .accessToken(jwtTokenProvider.generateAccessToken(member.getUserId()))
-                .refreshToken(member.getRefreshToken())
+    public MemberResponseDto.TokenInfo refreshAccessToken(HelpUserEntity member) {
+        return MemberResponseDto.TokenInfo.builder()
+                .accessToken(jwtTokenProvider.generateAccessToken(member.getUserEmail()))
+                .refreshToken(member.getUserToken())
                 .build();
     }
 }
