@@ -13,7 +13,8 @@ public enum AuthErrorCode implements ErrorCode {
     UNSUPPORTED_JWT("AUTH_004", "지원하지 않는 JWT입니다.", HttpStatus.UNAUTHORIZED),
     INVALID_ID_TOKEN("AUTH_005", "유효하지 않은 ID TOKEN입니다.", HttpStatus.BAD_REQUEST),
     INVALID_ACCESS_TOKEN("AUTH_006", "유효하지 않은 ACCESS TOKEN입니다.", HttpStatus.BAD_REQUEST),
-    FAILED_SOCIAL_LOGIN("AUTH_007", "소셜 로그인에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+    FAILED_SOCIAL_LOGIN("AUTH_007", "소셜 로그인에 실패하였습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    NOT_FOUND_ACCESS_TOKEN("AUTH_008","ACCESS TOKEN 을 찾을 수 없습니다",HttpStatus.BAD_REQUEST);
     private final String errorCode;
     private final String message;
     private final HttpStatus status;

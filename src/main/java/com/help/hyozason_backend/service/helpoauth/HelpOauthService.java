@@ -64,9 +64,18 @@ public class HelpOauthService extends ResponseService {
         while ((line = br.readLine()) != null) {
             result.append(line);
         }
-        JsonElement element = new JsonParser().parse(result.toString());
 
-        accessToken = element.getAsJsonObject().get("access_token").getAsString();
+        JsonElement element = JsonParser.parseString(result.toString());
+
+        if(element.isJsonObject()) {
+            JsonElement accessTokenElement = element.getAsJsonObject().get("access_token");
+//            accessToken = element.getAsJsonObject().get("access_token").getAsString();
+            if (accessTokenElement != null && accessTokenElement.isJsonPrimitive()) {
+                accessToken = accessTokenElement.getAsString();
+            } else {
+                throw new BaseException(AuthErrorCode.NOT_FOUND_ACCESS_TOKEN);
+            }
+        }
 
         br.close();
         bw.close();
