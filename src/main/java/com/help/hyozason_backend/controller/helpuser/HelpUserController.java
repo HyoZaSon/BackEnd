@@ -1,10 +1,57 @@
 package com.help.hyozason_backend.controller.helpuser;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
+import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
+import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
+import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
+import com.help.hyozason_backend.exception.BaseException;
+import com.help.hyozason_backend.security.auth.CurrentMember;
+import com.help.hyozason_backend.service.helpuser.HelpUserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-//@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
+
+import javax.validation.Valid;
+import java.io.IOException;
+
+@RequiredArgsConstructor
 @RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
 @RequestMapping("/help")
 public class HelpUserController {
+
+    @Autowired
+    private final HelpUserService memberService;
+
+    /**
+     * [POST] 소셜 회원가입
+     */
+    @PostMapping("/sign-up")
+    public ResponseEntity<MemberResponseDto.TokenInfo> register(
+
+            @Valid @RequestBody MemberRequestDto.RegisterMember registerMember) {
+        return new ResponseEntity<>
+                (memberService.registerMember(registerMember), HttpStatus.OK);
+    }
+
+    /**
+     * [POST] 소셜 로그인
+     */
+    @PostMapping("/login")
+    public ResponseEntity<MemberResponseDto.TokenInfo> socialLogin(
+            @Valid @RequestBody MemberRequestDto.SocialLoginToken socialLoginToken) throws IOException, BaseException {
+        return new ResponseEntity<>(
+                memberService.socialLogin( socialLoginToken), HttpStatus.OK);
+    }
+
+
+    /**
+     * [PATCH] 로그인 토큰 갱신
+     */
+    @PatchMapping("/member/refresh")
+    public ResponseEntity<MemberResponseDto.TokenInfo> refreshLogin(@CurrentMember HelpUserEntity member) {
+        return new ResponseEntity<>(memberService.refreshAccessToken(member), HttpStatus.OK);
+    }
 }

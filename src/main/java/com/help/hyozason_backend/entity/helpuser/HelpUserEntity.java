@@ -11,13 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data //get,set 메소드 이용가능하게 하는 어노테이션
 @Table(name = "HelpUser")
-public class HelpUserEntity {
+public class HelpUserEntity  {
+
+
     @Id
     @Column(name="userEmail")
     String userEmail;
 
     @Column(name = "userToken")
-    String userToken;
+    String refreshToken;
 
     @Column(name = "userName")
     String userName;
@@ -34,5 +36,20 @@ public class HelpUserEntity {
     @Column(name = "userRole")
     String userRole;
 
+
+
+    public void changeRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public HelpUserEntity(String userEmail,String userName,  long userAge, String userGender,String userPhone,String userRole,String refreshToken ) {
+        this.userEmail = userEmail;
+        this.userName = userName;
+        this.userAge = userAge;
+        this.userGender = userGender;
+        this.userPhone = userPhone;
+        this.userRole = userRole;
+        this.refreshToken = refreshToken;
+    }
 
 }

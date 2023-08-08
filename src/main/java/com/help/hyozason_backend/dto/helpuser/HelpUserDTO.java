@@ -1,6 +1,8 @@
 package com.help.hyozason_backend.dto.helpuser;
 import lombok.*;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 
 @Builder
