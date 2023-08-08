@@ -1,7 +1,9 @@
 package com.help.hyozason_backend.service.helpoauth;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
 import com.help.hyozason_backend.etc.ResponseService;
 import com.help.hyozason_backend.exception.AuthErrorCode;
 import com.help.hyozason_backend.exception.BaseException;
@@ -72,14 +74,24 @@ public class HelpOauthService extends ResponseService {
         return accessToken;
     }
 
-    public String getKaKaoEmail(String accessToken) throws IOException {
+    public HelpUserDTO getKaKaoEmail(String accessToken, HelpUserDTO helpUserDTO) throws IOException {
         String requestUrl = "https://kapi.kakao.com/v2/user/me";
-        StringBuilder result = getEmail(accessToken, requestUrl);
-        return new JsonParser().parse(result.toString()).getAsJsonObject().get("kakao_account")
-                .getAsJsonObject().get("email").getAsString();
+        JsonObject result = getData(accessToken, requestUrl);
+        JsonObject kakaoAccount = result.getAsJsonObject("kakao_account");
+        JsonObject properties = result.getAsJsonObject("properties");
+        String nickname = properties.get("nickname").getAsString();
+        String ageRange = kakaoAccount.get("age_range").getAsString();
+        int userAge = Integer.parseInt(ageRange.substring(0, 2));
+
+        helpUserDTO.setUserEmail(kakaoAccount.get("email").getAsString());
+        helpUserDTO.setUserGender(kakaoAccount.get("gender").getAsString());
+        helpUserDTO.setUserAge(userAge);
+        helpUserDTO.setUserName(nickname);
+        return helpUserDTO;
+
     }
 
-    public StringBuilder getEmail(String accessToken, String requestUrl) throws IOException {
+    public JsonObject getData(String accessToken, String requestUrl) throws IOException {
         URL url = new URL(requestUrl);
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestMethod(HttpMethod.GET.name());
@@ -88,13 +100,13 @@ public class HelpOauthService extends ResponseService {
         if (conn.getResponseCode() >= 400) {
             throw new BaseException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String line;
-        StringBuilder result = new StringBuilder();
-        while ((line = br.readLine()) != null) {
-            result.append(line);
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                result.append(line);
+            }
+            return JsonParser.parseString(result.toString()).getAsJsonObject();
         }
-        br.close();
-        return result;
     }
 }

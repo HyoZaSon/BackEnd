@@ -1,7 +1,7 @@
 package com.help.hyozason_backend.handler;
 
-import com.help.hyozason_backend.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;

@@ -22,9 +22,15 @@ public class MemberRequestDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RegisterMember {
+
         @NotBlank(message = "이메일 형식이 아닙니다.")
         @Email(message = "이메일 형식이 아닙니다.")
-        private String email;
+        private String userEmail;
+        private String userPhone;
+        private String userRole;
+
     }
+
+
 
 }

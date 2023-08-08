@@ -1,11 +1,14 @@
 package com.help.hyozason_backend.controller.helpuser;
 
+import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
 import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
 import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
+import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.security.auth.CurrentMember;
 import com.help.hyozason_backend.service.helpuser.HelpUserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +22,7 @@ import java.io.IOException;
 @RequestMapping("/help")
 public class HelpUserController {
 
+    @Autowired
     private final HelpUserService memberService;
 
     /**
@@ -26,6 +30,7 @@ public class HelpUserController {
      */
     @PostMapping("/sign-up")
     public ResponseEntity<MemberResponseDto.TokenInfo> register(
+
             @Valid @RequestBody MemberRequestDto.RegisterMember registerMember) {
         return new ResponseEntity<>
                 (memberService.registerMember(registerMember), HttpStatus.OK);
@@ -36,7 +41,7 @@ public class HelpUserController {
      */
     @PostMapping("/login")
     public ResponseEntity<MemberResponseDto.TokenInfo> socialLogin(
-            @Valid @RequestBody MemberRequestDto.SocialLoginToken socialLoginToken) throws IOException {
+            @Valid @RequestBody MemberRequestDto.SocialLoginToken socialLoginToken) throws IOException, BaseException {
         return new ResponseEntity<>(
                 memberService.socialLogin( socialLoginToken), HttpStatus.OK);
     }

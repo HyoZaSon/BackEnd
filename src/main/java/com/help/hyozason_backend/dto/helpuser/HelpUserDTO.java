@@ -1,6 +1,8 @@
 package com.help.hyozason_backend.dto.helpuser;
 import lombok.*;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 
 
 @Builder
@@ -15,10 +17,4 @@ public class HelpUserDTO {
     private String userGender;
     private String userPhone;
     private String userRole;
-
-    private boolean status = true;
-
-    public void updateStatus() {
-        this.status = false;
-    }
 }

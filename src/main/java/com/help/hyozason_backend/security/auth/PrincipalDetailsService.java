@@ -9,16 +9,19 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class PrincipalDetailsService implements UserDetailsService {
-
+    //이메일 기반으로 사용자 정보 조회 PrincipalDetails객체 반환
     private final HelpUserRepository helpUserRepository;
 
     @Override
     public PrincipalDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        HelpUserEntity memberEntity = helpUserRepository.findByEmailWithStatus(email)
-                .orElseThrow(() -> new BaseException(MemberErrorCode.EMPTY_MEMBER));
+//        Optional <HelpUserEntity> helpUserEntity = helpUserRepository.findByUserEmail(email);
+        HelpUserEntity memberEntity = helpUserRepository.findByUserEmail(email);
+
         return new PrincipalDetails(memberEntity);
     }
 }

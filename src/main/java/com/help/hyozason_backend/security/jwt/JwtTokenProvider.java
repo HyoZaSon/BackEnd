@@ -29,11 +29,14 @@ public class JwtTokenProvider {
     @Value("${jwt.refresh-key}")
     private String refreshSecretKey;
 
+//    private String accessSecretKey;
+
     private final PrincipalDetailsService principalDetailsService;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_HEADER = "refreshToken";
-    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 24시간
+//    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 24시간
+    private static final long TOKEN_VALID_TIME = 1000 * 60L;
     private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 60L;  // 유효기간 2달
 
     @PostConstruct
@@ -42,6 +45,11 @@ public class JwtTokenProvider {
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
+    public String getUserPk(String token) {
+        return Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    //memberId 기반으로 AccessToken 생성 반환
     public String generateAccessToken(String email) {
         Claims claims = Jwts.claims();
         claims.put("userEmail", email);
@@ -57,6 +65,7 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    //AccessToken, RefreshToken 생성 후 반환
     public MemberResponseDto.TokenInfo generateToken(String email) {
         Claims claims = Jwts.claims();
         claims.put("userEmail", email);
@@ -75,6 +84,7 @@ public class JwtTokenProvider {
         return new MemberResponseDto.TokenInfo(accessToken, refreshToken);
     }
 
+    //AccessToken 기반으로 인증 정보 가져와 UsernamePasswordAuthenticationToken으로 반환
     public Authentication getAuthentication(String token) {
         try {
             PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(
@@ -86,6 +96,7 @@ public class JwtTokenProvider {
         }
     }
 
+    //RefreshToken 기반으로 인증 가져 반환
     public Authentication getRefreshAuthentication(String token) {
         try {
             PrincipalDetails principalDetails = principalDetailsService.loadUserByUsername(
@@ -96,23 +107,25 @@ public class JwtTokenProvider {
             throw new BaseException(AuthErrorCode.UNSUPPORTED_JWT);
         }
     }
-
+    //주어진 토큰으로 memberId 값 추출해 반환
     public String getMemberIdByToken(String token) {
         return Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token).
-                getBody().get("memberId").toString();
+                getBody().get("userEmail").toString();
     }
     public String getMemberIdByRefreshToken(String token) {
         return Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token).
-                getBody().get("memberId").toString();
+                getBody().get("userEmail").toString();
     }
+    //AUTHORIZATION_HEADER 추출해 반환
     public String resolveToken(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION_HEADER);
     }
-
+    //refreshToken 헤더 추출해 반환
     public String resolveRefreshToken(HttpServletRequest request) {
         return request.getHeader(REFRESH_HEADER);
     }
 
+    //AccessToken 유효성 검사
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
@@ -127,6 +140,8 @@ public class JwtTokenProvider {
             throw new BaseException(AuthErrorCode.EMPTY_JWT);
         }
     }
+
+    //RefreshToken 유효성 검사
     public boolean validateRefreshToken(String token) {
         try {
             Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);

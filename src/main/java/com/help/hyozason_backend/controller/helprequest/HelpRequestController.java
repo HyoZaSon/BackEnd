@@ -5,8 +5,9 @@ import com.help.hyozason_backend.dto.helprequest.HelpRequestDTO;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.etc.HelpResponse;
 import com.help.hyozason_backend.etc.ResponseService;
-import com.help.hyozason_backend.jwt.JwtTokenProvider;
+
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
+import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 
 //@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
@@ -79,6 +81,7 @@ public class HelpRequestController extends ResponseService {
         String token = tokenHeaders != null && !tokenHeaders.isEmpty() ? tokenHeaders.get(0) : null;
         //B 회원 정보 추출
         String userEmail = jwtTokenProvider.getUserPk(token);
+//        Optional <HelpUserEntity> helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
         HelpUserEntity helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
 
         //서비스를 통해서 helpAccept 여부 변경

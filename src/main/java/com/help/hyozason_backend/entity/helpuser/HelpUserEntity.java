@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
 @Entity
 @Builder
 @AllArgsConstructor
@@ -21,7 +19,7 @@ public class HelpUserEntity  {
     String userEmail;
 
     @Column(name = "userToken")
-    String userToken;
+    String refreshToken;
 
     @Column(name = "userName")
     String userName;
@@ -38,17 +36,20 @@ public class HelpUserEntity  {
     @Column(name = "userRole")
     String userRole;
 
-    private boolean status = true;
 
-    @NotNull
-    private String refreshToken;
 
     public void changeRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
     }
 
-    public HelpUserEntity(String email) {
-        this.userEmail = email;
+    public HelpUserEntity(String userEmail,String userName,  long userAge, String userGender,String userPhone,String userRole,String refreshToken ) {
+        this.userEmail = userEmail;
+        this.userName = userName;
+        this.userAge = userAge;
+        this.userGender = userGender;
+        this.userPhone = userPhone;
+        this.userRole = userRole;
+        this.refreshToken = refreshToken;
     }
 
 }
