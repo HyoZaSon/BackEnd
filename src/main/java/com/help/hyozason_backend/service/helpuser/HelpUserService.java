@@ -37,17 +37,25 @@ public class HelpUserService  {
     }
 
     public HelpUserEntity register( MemberRequestDto.RegisterMember registerMember) {
-        HelpUserEntity member = new HelpUserEntity(
+        HelpUserEntity member = new HelpUserEntity();
+        if (helpUserDTO.getUserEmail().equals(registerMember.getUserEmail())) {
+            // 이메일이 유효하지 않은 경우 에러 처리
+         member.setRefreshToken( helpUserDTO.getUserToken());
+         member.setUserAge(helpUserDTO.getUserAge());
+         member.setUserEmail( registerMember.getUserEmail());
+         member.setUserGender(helpUserDTO.getUserGender());
+         member.setUserName(helpUserDTO.getUserName());
+         member.setUserPhone( registerMember.getUserPhone());
+         member.setUserRole(registerMember.getUserRole());
 
-                registerMember.getUserEmail(),
-                helpUserDTO.getUserName(),
-                helpUserDTO.getUserAge(),
-                helpUserDTO.getUserGender(),
-                registerMember.getUserPhone(),
-                registerMember.getUserRole(),
-                helpUserDTO.getUserToken());
 
+        }else{
+            BaseException exception = new BaseException(MemberErrorCode.INVALID_MEMBER);
+//            exception.setEmailMessage(registerMember.getUserEmail());
+            throw exception;
+        }
         return member;
+
     }
 
     public MemberResponseDto.TokenInfo registerMember(  MemberRequestDto.RegisterMember registerMember  ) {
