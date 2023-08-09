@@ -13,7 +13,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
 
 
-
+    //들어오는 모든 요청마다 JWT 토큰의 존재 여부와 유효성을 확인하는 역할
     @RequiredArgsConstructor
     public class JwtAuthenticationFilter extends GenericFilterBean {
 
@@ -22,7 +22,9 @@ import java.io.IOException;
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
+            //refreshToken 헤더에서 추출해 반환
             String refreshToken = jwtTokenProvider.resolveRefreshToken((HttpServletRequest) request);
+            // //AUTHORIZATION_HEADER 추출해 반환
             String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
             if (refreshToken != null && ((HttpServletRequest) request).getRequestURI()
                     .equals("/member/refresh") && jwtTokenProvider.validateRefreshToken(refreshToken)) {

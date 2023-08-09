@@ -28,8 +28,12 @@ public class MemberRequestDto {
         private String userEmail;
         private String userPhone;
         private String userRole;
+        private String regionInfo1;
+        private String regionInfo2;
 
     }
+
+
 
 
 
