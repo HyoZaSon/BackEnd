@@ -89,12 +89,8 @@ public class HelpOauthService extends ResponseService {
         JsonObject kakaoAccount = result.getAsJsonObject("kakao_account");
         JsonObject properties = result.getAsJsonObject("properties");
         String nickname = properties.get("nickname").getAsString();
-        String ageRange = kakaoAccount.get("age_range").getAsString();
-        int userAge = Integer.parseInt(ageRange.substring(0, 2));
-
-        helpUserDTO.setUserEmail(kakaoAccount.get("email").getAsString());
-        helpUserDTO.setUserGender(kakaoAccount.get("gender").getAsString());
-        helpUserDTO.setUserAge(userAge);
+        String email = kakaoAccount.get("email").getAsString();
+        helpUserDTO.setUserEmail(email);
         helpUserDTO.setUserName(nickname);
         return helpUserDTO;
 

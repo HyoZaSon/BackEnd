@@ -76,7 +76,7 @@ public class ControllerAdvice {
     }
 
     /**
-     * CASE: 메일 관련 에러
+     * CASE: 문자 관련 에러
      */
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<ExceptionResponse> handleException(MessagingException e) {

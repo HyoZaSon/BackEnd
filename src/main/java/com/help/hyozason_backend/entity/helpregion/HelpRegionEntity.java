@@ -17,8 +17,14 @@ public class HelpRegionEntity {
     @Column(name="regionId")
     long regionId;
 
-    @Column(name = "regionInfo")
-    String regionInfo;
+//    @Column(name = "regionInfo")
+//    String regionInfo;
+
+    @Column(name = "region_2depth_name")
+    String regionInfo1;
+
+    @Column(name = "region_3depth_name")
+    String regionInfo2;
 
     @Column(name = "userEmail")
     String userEmail;

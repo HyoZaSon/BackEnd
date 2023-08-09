@@ -1,4 +1,5 @@
 package com.help.hyozason_backend.dto.helpregion;
+import jakarta.persistence.Column;
 import lombok.*;
 
 
@@ -12,5 +13,8 @@ public class HelpRegionDTO {
 
     private long regionId;
     private String userEmail;
-    private String regionInfo;
+
+    private String regionInfo1;
+
+    private String regionInfo2;
 }

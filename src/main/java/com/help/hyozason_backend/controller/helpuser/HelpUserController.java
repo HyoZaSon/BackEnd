@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
-@RequestMapping("/help")
+@RequestMapping("/help/user")
 public class HelpUserController {
 
     @Autowired
@@ -28,7 +28,7 @@ public class HelpUserController {
     /**
      * [POST] 소셜 회원가입
      */
-    @PostMapping("/sign-up")
+    @PostMapping("/signin")
     public ResponseEntity<MemberResponseDto.TokenInfo> register(
 
             @Valid @RequestBody MemberRequestDto.RegisterMember registerMember) {
