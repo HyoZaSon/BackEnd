@@ -1,7 +1,6 @@
 package com.help.hyozason_backend.service.helpuser;
 
 
-import com.help.hyozason_backend.dto.helpregion.HelpRegionDTO;
 import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
 import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
 import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
@@ -10,7 +9,6 @@ import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 
 import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.exception.MemberErrorCode;
-import com.help.hyozason_backend.repository.helplocation.HelpLocationRepository;
 import com.help.hyozason_backend.repository.helpregion.HelpRegionRepository;
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
 import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
@@ -80,7 +78,7 @@ public class HelpUserService  {
         }
     }
 
-    //요청시 reqeust body에 Id Token 넣어서 와야함
+    //요청시  Id Token 넣어서 와야함
     public MemberResponseDto.TokenInfo socialLogin(
                                                    MemberRequestDto.SocialLoginToken socialLoginToken) throws BaseException, IOException {
         String idToken = socialLoginToken.getIdToken();
@@ -110,6 +108,8 @@ public class HelpUserService  {
     }
 
     public MemberResponseDto.TokenInfo refreshAccessToken(HelpUserEntity member) {
+        System.out.print(member.getUserEmail());
+        System.out.print(member);
         return MemberResponseDto.TokenInfo.builder()
                 .accessToken(jwtTokenProvider.generateAccessToken(member.getUserEmail()))
                 .refreshToken(member.getRefreshToken())

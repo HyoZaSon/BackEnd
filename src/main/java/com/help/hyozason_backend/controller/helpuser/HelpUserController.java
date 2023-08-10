@@ -1,6 +1,5 @@
 package com.help.hyozason_backend.controller.helpuser;
 
-import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
 import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
 import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
@@ -19,7 +18,7 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
-@RequestMapping("/help/user")
+@RequestMapping("/")
 public class HelpUserController {
 
     @Autowired
@@ -50,8 +49,19 @@ public class HelpUserController {
     /**
      * [PATCH] 로그인 토큰 갱신
      */
-    @PatchMapping("/member/refresh")
+    @PatchMapping("user/refresh")
     public ResponseEntity<MemberResponseDto.TokenInfo> refreshLogin(@CurrentMember HelpUserEntity member) {
         return new ResponseEntity<>(memberService.refreshAccessToken(member), HttpStatus.OK);
     }
+
+
+    @GetMapping("/access")
+    public ResponseEntity<String> accessToken() {
+        // 처리 로직
+        return ResponseEntity.ok("Access granted!");
+    }
+
+
+
+
 }

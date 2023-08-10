@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
-//import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import java.io.IOException;
 
 
@@ -26,11 +25,14 @@ import java.io.IOException;
             String refreshToken = jwtTokenProvider.resolveRefreshToken((HttpServletRequest) request);
             // //AUTHORIZATION_HEADER 추출해 반환
             String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+
             if (refreshToken != null && ((HttpServletRequest) request).getRequestURI()
-                    .equals("/member/refresh") && jwtTokenProvider.validateRefreshToken(refreshToken)) {
+                    .equals("/user/refresh") && jwtTokenProvider.validateRefreshToken(refreshToken)) {
+                System.out.println("refreshToken 정보 확인 +유효성 검사 통과");
                 Authentication authentication = jwtTokenProvider.getRefreshAuthentication(refreshToken);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } else if (token != null && jwtTokenProvider.validateToken(token)) {
+                System.out.println("accessToken 정보 확인 +유효성 검사 통과");
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

@@ -25,18 +25,21 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                //JwtAuthenticationFilter 등록(JWT 토큰의 존재 여부와 유효성을 검증)
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
                         UsernamePasswordAuthenticationFilter.class)
-                .csrf().disable()
+                .csrf().disable() //CSRF 비활성화
                 .cors().and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션 유지 X
                 .and()
-                .formLogin().disable()
-                .httpBasic().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/member/**").hasAnyRole("MEMBER", "MANAGER")
-                .requestMatchers("/manager/**").hasAnyRole("MANAGER")
-                .anyRequest().permitAll()
+                .formLogin().disable() //폼 로그인 비활성화
+                .httpBasic().disable() //HTTP기본 인증 비활성화
+                .authorizeHttpRequests() //각 엔드포인트에 대한 접근 권한을 설정
+                .requestMatchers("/help/**").hasAnyRole("HELP", "MANAGER") // 특정 URL 패턴에 대한 접근 권한을 부여, 역할 지정
+                .requestMatchers("/helper/**").hasAnyRole("HELPER","MANAGER")
+                .requestMatchers("/user-info").permitAll()
+                .requestMatchers("/user").hasAnyRole("MEMBER", "MANAGER")
+                .anyRequest().permitAll() //다른 모든 요청 모든 사용자에게 허용
                 .and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler)
                 .and()

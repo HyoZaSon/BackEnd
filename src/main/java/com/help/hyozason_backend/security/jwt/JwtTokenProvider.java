@@ -118,19 +118,28 @@ public class JwtTokenProvider {
     }
     //AUTHORIZATION_HEADER 추출해 반환
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(AUTHORIZATION_HEADER);
+        return resolveBearer(request);
     }
     //refreshToken 헤더 추출해 반환
     public String resolveRefreshToken(HttpServletRequest request) {
         return request.getHeader(REFRESH_HEADER);
     }
 
+    public String resolveBearer(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7); // "Bearer " 접두사 제거
+        }
+        return null; // 토큰이 없을 경우
+    }
     //AccessToken 유효성 검사
     public boolean validateToken(String token) {
+
         try {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
+            System.out.println(e);
             throw new BaseException(AuthErrorCode.INVALID_JWT);
         } catch (ExpiredJwtException e) {
             throw new BaseException(AuthErrorCode.EXPIRED_MEMBER_JWT);
@@ -139,6 +148,7 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException e) {
             throw new BaseException(AuthErrorCode.EMPTY_JWT);
         }
+
     }
 
     //RefreshToken 유효성 검사
