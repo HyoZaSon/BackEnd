@@ -69,6 +69,12 @@ public class HelpRequestService extends ResponseService {
             HelpLocationDTO locationDTO = HelpLocationDTO.builder()
                     .locationInfo(helpRequestDTO.getLocationInfo())
                     .userEmail(userEmail)
+                    .region_2depth_name(helpRequestDTO.getRegion_2depth_name())
+                    .region_3depth_name(helpRequestDTO.getRegion_3depth_name())
+                    .mountain_yn(helpRequestDTO.getMountain_yn())
+                    .main_address_no(helpRequestDTO.getMain_address_no())
+                    .sub_address_no(helpRequestDTO.getSub_address_no())
+                    .zip_code(helpRequestDTO.getZip_code())
                     .build();
 
             //HelpBoardDTO 를 Entity로 매핑
@@ -134,7 +140,8 @@ public class HelpRequestService extends ResponseService {
         HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(helpEmail); //도움 요청자 정보 확인
 
         //사용자 A (특정 사용자)에게 메시지 보내기 위한 정보, 메시지 보낼 주소, 메시지 내용
-        messagingTemplate.convertAndSendToUser(helpUserEntity.getUserPhone(), topicPath, "도움 요청이 수락되었습니다.");
+        messagingTemplate.convertAndSendToUser(helpEmail, topicPath, "도움 요청이 수락되었습니다.");
+        messagingTemplate.convertAndSend(topicPath, "도움 요청이 수락되었습니다.");
         //여기에 문자 api 구현하기
 
 

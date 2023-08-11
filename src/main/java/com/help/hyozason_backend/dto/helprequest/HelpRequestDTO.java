@@ -15,6 +15,12 @@ public class HelpRequestDTO {
     private String helpCategory;
     private String helpAccept;
     private String locationInfo;
+    private String region_2depth_name;
+    private String region_3depth_name;
+    private String mountain_yn;
+    private String main_address_no;
+    private String sub_address_no;
+    private String zip_code;
 
 
 

@@ -18,15 +18,21 @@ public class HelpLocationEntity {
     @Column(name="locationInfo")
     String locationInfo;
 
-    @Column(name = "longitude")
-    String longitude;
-
-    @Column(name = "latitude")
-    String latitude;
-
     @Column(name="createdAt", nullable = false)
     LocalDateTime createdAt;
 
     @Column(name = "userEmail")
     String userEmail;
+    @Column(name = "region_2depth_name")
+    private String region_2depth_name;
+    @Column(name = "region_3depth_name")
+    private String region_3depth_name;
+    @Column(name = "mountain_yn")
+    private String mountain_yn;
+    @Column(name = "main_address_no")
+    private String main_address_no;
+    @Column(name = "sub_address_no")
+    private String sub_address_no;
+    @Column(name = "zip_code")
+    private String zip_code;
 }
