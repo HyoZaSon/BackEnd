@@ -9,7 +9,7 @@ import com.help.hyozason_backend.entity.helpboard.HelpBoardEntity;
 import com.help.hyozason_backend.entity.helplocation.HelpLocationEntity;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.etc.ResponseService;
-//import com.help.hyozason_backend.handler.HelpRequestHandler;
+import com.help.hyozason_backend.handler.HelpRequestHandler;
 import com.help.hyozason_backend.mapper.helpboard.HelpBoardMapper;
 import com.help.hyozason_backend.mapper.helplocation.HelpLocationMapper;
 import com.help.hyozason_backend.repository.helpboard.HelpBoardRepository;
@@ -68,6 +68,8 @@ public class HelpRequestService extends ResponseService {
             //RequestDTO 를 locationDTO로 매핑
             HelpLocationDTO locationDTO = HelpLocationDTO.builder()
                     .locationInfo(helpRequestDTO.getLocationInfo())
+                    .longitude(helpRequestDTO.getLongitude())
+                    .latitude(helpRequestDTO.getLatitude())
                     .userEmail(userEmail)
                     .build();
 

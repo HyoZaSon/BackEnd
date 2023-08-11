@@ -42,16 +42,11 @@ public class HelpRequestController extends ResponseService {
         this.messagingTemplate = messagingTemplate;
     }
 
-    @MessageMapping("/hello")
-    public void message(Message message){
-        messagingTemplate.convertAndSend("/topic/hello",message);
-    }
-
 
     /***도움 요청 소켓 통신 활용 관련 코드***/
     //사용자 A 도움 요청
     @MessageMapping("/requestHelp") // "/app/requestHelp" 로 접근해야함.
-    //@SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
+    @SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
     public HelpResponse requestHelp(Message<HelpRequestDTO> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         Thread.sleep(1000);
 

@@ -10,7 +10,6 @@ public class HyozasonBackendApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(HyozasonBackendApplication.class, args);
-
     }
 
 }
