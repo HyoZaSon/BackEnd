@@ -1,7 +1,10 @@
-package com.help.hyozason_backend.handler;
+package com.help.hyozason_backend.socket;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.help.hyozason_backend.dto.helpboard.HelpBoardDTO;
+//이 클래스는 소켓 연결이 시작되면 자동으로 콜 됩니다.
+//서비스(비즈니스 로직) 해당 클래스 (소켓 통신 전용)
+// stomp 적용으로 해당 클래스는 컨트롤러로 바꿔야함
+
+
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-//이 클래스는 소켓 연결이 시작되면 자동으로 콜 됩니다.
-//서비스(비즈니스 로직) 해당 클래스 (소켓 통신 전용)
-// stomp 적용으로 해당 클래스는 컨트롤러로 바꿔야함
 @Slf4j
 @Component
 public class HelpRequestHandler extends TextWebSocketHandler {
@@ -45,8 +45,8 @@ public class HelpRequestHandler extends TextWebSocketHandler {
      * 사용자 B가 도움 요청 글을 확인하고 수락하면, 해당 정보를 웹 소켓을 통해 핸들러로 전송한다.
      * 웹 소켓 핸들러에서 사용자 B의 수락 여부 및 정보를 처리하고,  이를 HelpRequestService를 이용하여 도움 요청 글의 상태를 업데이트하고 필요한 처리를 합니다.
      * 사용자 A에게 수락 여부 및 사용자 B의 정보를 웹 소켓을 통해 알립니다.
-     * **/
-
+     *
+    **/
 
     //웹 소켓 연결
     @Override
@@ -83,7 +83,7 @@ public class HelpRequestHandler extends TextWebSocketHandler {
          예를 들어, 사용자 A가 도움 요청을 수락하면 해당 정보를 받아서 처리하는 로직을 추가할 수 있습니다.
          이후, 해당 정보를 HelpRequestService를 통해 처리하도록 호출할 수도 있습니다.
          메시지가 {"helpId":123,"userEmail":"도움 요청 제목","category":"도움 카테고리","user":{"id":456,"name":"사용자 이름","phoneNumber":"사용자 전화번호","location":"사용자 위치"}}
-        ***/
+
             // JSON 형식의 데이터를 파싱하여 HelpBoardDTO 객체로 변환
             ObjectMapper objectMapper = new ObjectMapper();
             HelpBoardDTO helpBoardDTO = objectMapper.readValue(payload, HelpBoardDTO.class);
@@ -92,14 +92,14 @@ public class HelpRequestHandler extends TextWebSocketHandler {
             helpRequestService.acceptHelpRequest(helpBoardDTO.getHelpId());
             // 해당 도움 요청의 글 작성자의 WebSocket 세션을 찾아 알림을 전송
 
-        /*
+
             WebSocketSession targetSession = userSessionsMap.get(helpBoardDTO.getUserId());
             if (targetSession != null) {
                 String msg = "도움 요청이 수락되었습니다!";
                 sendNotificationToUser(msg, targetSession);
             }
+         ***/
 
-*/
 
 
     };
@@ -162,3 +162,4 @@ public class HelpRequestHandler extends TextWebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session,Throwable throwable){};
 }
+
