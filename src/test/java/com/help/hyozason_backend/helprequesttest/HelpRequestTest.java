@@ -32,7 +32,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-
+/**
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class HelpRequestTest {
 
@@ -133,10 +133,13 @@ public class HelpRequestTest {
         return WEB_SOCKET_URI;
     }
 
-    /**
+
      * 테스트 코드 관련 글
      * https://kukekyakya.tistory.com/12
      *
-     * **/
+     *
 
 }
+
+
+ **/
