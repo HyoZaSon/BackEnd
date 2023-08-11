@@ -1,4 +1,4 @@
-package com.help.hyozason_backend.handler;
+package com.help.hyozason_backend.socket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,21 +17,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         this.stompHandler = stompHandler;
     }
 
-    /*
-        private HelpRequestService helpRequestService;
-
-        @Override
-        public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-            registry
-                    .addHandler(signalingSocketHandler(),"/help-request") //웹소켓 서버의 엔드포인트 -> url:port/help-request, 리액트에서도 이걸로 웹소켓 요청 보내면됨
-                    .setAllowedOrigins("*"); //클라이언트의 모든 요청 수용
-        }
-
-        @Bean
-        public WebSocketHandler signalingSocketHandler() {
-            return new HelpRequestHandler(helpRequestService);
-        }
-        */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
         /*
@@ -44,8 +29,11 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
          *
          * */
         registry.addEndpoint("/ws-hyoza") //handshake endpoint 처음 웹소켓 handshake 경로
-                .setAllowedOriginPatterns("*")
-                .withSockJS();//소켓 연결
+                .setAllowedOriginPatterns("*")// WebSocketHandshakeInterceptor 등록
+                //.withSockJS(); //을 뺌 (-> 연결됨..!?!) //소켓 연결
+                .addInterceptors(new MyHandShakeInterceptor());
+        System.out.println("소켓연결 시작");
+
     }
 
     @Override

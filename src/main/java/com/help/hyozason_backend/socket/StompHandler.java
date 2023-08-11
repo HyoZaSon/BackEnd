@@ -1,4 +1,4 @@
-package com.help.hyozason_backend.handler;
+package com.help.hyozason_backend.socket;
 
 import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
 
@@ -28,15 +28,23 @@ public class StompHandler implements ChannelInterceptor {
     public StompHandler(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
+    /*@Override
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        return message;
+    }*/
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel){
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         System.out.println("message: "+message);
-        System.out.println("토큰 : "+accessor.getNativeHeader("authorization"));
+        System.out.println("토큰 : "+accessor.getFirstNativeHeader("Authorization"));
+
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
             jwtTokenProvider.validateToken(Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7));
+
         }
         return message;
+
+
     }
 
 
