@@ -11,9 +11,14 @@ import java.time.LocalDateTime;
 
 public class HelpLocationDTO {
     private String locationInfo;
-    private String longitude;
-    private String latitude;
     private LocalDateTime createdAt;
     private String userEmail;
+    private String region_2depth_name;
+    private String region_3depth_name;
+    private String mountain_yn;
+    private String main_address_no;
+    private String sub_address_no;
+    private String zip_code;
+
 
 }

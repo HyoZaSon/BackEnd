@@ -51,7 +51,7 @@ public class HelpRequestController extends ResponseService {
     /***도움 요청 소켓 통신 활용 관련 코드***/
     //사용자 A 도움 요청
     @MessageMapping("/requestHelp") // "/app/requestHelp" 로 접근해야함.
-    //@SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
+    @SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
     public HelpResponse requestHelp(Message<HelpRequestDTO> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         Thread.sleep(1000);
 
@@ -67,10 +67,10 @@ public class HelpRequestController extends ResponseService {
         long helpBoardId = helpRequestService.writeHelpRequest(helpRequestDTO, userEmail);
 
         // 도움 요청이 생성되었을 때, 해당 도움 요청의 고유 ID를 추출하고, 이를 활용하여 도움 요청에 대한 주제 생성
-        String topicPath = "/topic/request/" + helpBoardId; // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
+        String topicPath = "/topic/request"; // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
 
         //글 작성 이후에 구독자 (사용자 A) 에게 도움 요청 상태(글 업로드 됨)를 전달한다.
-        messagingTemplate.convertAndSend(topicPath,helpRequestDTO);
+        messagingTemplate.convertAndSend(topicPath,"help request board upload success. 게시글 번호 : "+helpBoardId+"사용자 이메일 :"+userEmail);
 
         return setResponse(200,"help request board upload success",helpBoardId);
     }
@@ -94,6 +94,7 @@ public class HelpRequestController extends ResponseService {
 
         //helpEmail 이 null일 경우
         if(helpEmail == null){
+            messagingTemplate.convertAndSendToUser(userEmail,"/queue/acceptHelp/"+helpBoardId,"이미 다른 사람이 수락했습니다.");
             return setResponse(400,"이미 다른 사람이 수락했습니다.",null);
         }else{
             // 도움 요청 수락 처리 후 사용자 A에게 알림을 보내기
