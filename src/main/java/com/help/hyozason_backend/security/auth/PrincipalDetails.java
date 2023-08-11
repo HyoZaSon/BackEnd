@@ -11,25 +11,27 @@ import java.util.Collection;
 
 
 public class PrincipalDetails implements UserDetails {
-    private final HelpUserEntity helpUser;
+
+    private HelpUserEntity member;
 
     public PrincipalDetails(HelpUserEntity member) {
-        this.helpUser = member;
+        this.member = member;
     }
+
 
     public BCryptPasswordEncoder encodePwd() {
         return new BCryptPasswordEncoder();
     }
 
     public HelpUserEntity getMember() {
-        return this.helpUser;
+        return this.member;
     }
 
     //사용자의 권한 정보 반환. 사용자의 Role을 SimpleGrantedAuthority객체로 반환
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(helpUser.getUserRole()));
+        authorities.add(new SimpleGrantedAuthority(member.getUserRole()));
         return authorities;
     }
     //사용자의 비밀 번호 반환
@@ -41,7 +43,7 @@ public class PrincipalDetails implements UserDetails {
     @Override
     public String getUsername() {
 
-        return helpUser.getUserEmail();
+        return member.getUserEmail();
     }
 
     @Override

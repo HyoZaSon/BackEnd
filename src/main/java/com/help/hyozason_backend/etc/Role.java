@@ -7,8 +7,14 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum Role {
-    HELPER("HELPER"),
-    HELP("HELP");
+    ROLE_HELPER("HELPER"),
+    ROLE_HELP("HELP"),
+
+    ROLE_MEMBER("member"),
+    ROLE_MANAGER("manager");
+
+
+
     private String value;
 
     @JsonCreator

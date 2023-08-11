@@ -1,15 +1,11 @@
 package com.help.hyozason_backend.security.auth;
 
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
-import com.help.hyozason_backend.exception.BaseException;
-import com.help.hyozason_backend.exception.MemberErrorCode;
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
