@@ -10,7 +10,7 @@ public enum Role {
     ROLE_HELPER("HELPER"),
     ROLE_HELP("HELP"),
 
-    ROLE_MEMBER("member"),
+//    ROLE_MEMBER("member"),
     ROLE_MANAGER("manager");
 
 

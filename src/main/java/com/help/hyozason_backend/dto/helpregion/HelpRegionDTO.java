@@ -17,4 +17,6 @@ public class HelpRegionDTO {
     private String regionInfo1;
 
     private String regionInfo2;
+
+
 }

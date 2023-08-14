@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/help/**").hasAnyRole("HELP", "MANAGER") // 특정 URL 패턴에 대한 접근 권한을 부여, 역할 지정
                 .requestMatchers("/helper/**").hasAnyRole("HELPER","MANAGER")
                 .requestMatchers("/user-info").permitAll()
-                .requestMatchers("/user").hasAnyRole("MEMBER", "MANAGER")
+                .requestMatchers("/user").hasAnyRole("HELP", "HELPER","MANAGER")
                 .anyRequest().permitAll() //다른 모든 요청 모든 사용자에게 허용
                 .and()
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler)
