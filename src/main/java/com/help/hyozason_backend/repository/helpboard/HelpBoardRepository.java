@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface HelpBoardRepository extends JpaRepository<HelpBoardEntity,Long> {
-    Page<HelpBoardEntity> findAll(Pageable pageable);
+public interface HelpBoardRepository extends JpaRepository<HelpBoardEntity, Long> {
+    Page<HelpBoardEntity> findByLocationInfo(String locationInfo, Pageable pageable);
 }
+

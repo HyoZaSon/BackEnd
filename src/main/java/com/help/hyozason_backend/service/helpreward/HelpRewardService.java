@@ -16,16 +16,18 @@ public class HelpRewardService extends ResponseService {
 
     public int grantRewards(int rating) {
         switch (rating) {
+            case 0:
+                return 0;
             case 1:
-                return 1;
-            case 2:
-                return 2;
-            case 3:
-                return 5;
-            case 4:
-                return 7;
-            case 5:
                 return 10;
+            case 2:
+                return 20;
+            case 3:
+                return 30;
+            case 4:
+                return 40;
+            case 5:
+                return 50;
             default:
                 throw new IllegalArgumentException("잘못된 입력입니다.");
         }
