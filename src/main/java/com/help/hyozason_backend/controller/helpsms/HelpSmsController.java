@@ -18,11 +18,11 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/help")
+//@RequestMapping("/help")
 public class HelpSmsController {
     private final HelpSmsService helpSmsService;
 
-    @PostMapping("/send")
+    //@PostMapping("/send")
     public String sendSms(@RequestBody MessageDTO messageDto, Model model) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         SmsResponseDTO response = helpSmsService.sendSms(messageDto);
         model.addAttribute("response", response);

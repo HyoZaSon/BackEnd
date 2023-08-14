@@ -7,8 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface HelpRegionRepository extends JpaRepository<HelpRegionEntity,String>{
+    List<HelpRegionEntity> findByRegion2DepthName(String region_2depth_name);
 }
 
 

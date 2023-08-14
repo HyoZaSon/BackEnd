@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HelpBoardRepository extends JpaRepository<HelpBoardEntity,Long> {
-    Page<HelpBoardEntity> findAll(Pageable pageable);
+    Page<HelpBoardEntity> findByHelpLocation_Region2DepthName(String region_2depth_name, Pageable pageable);
 }
