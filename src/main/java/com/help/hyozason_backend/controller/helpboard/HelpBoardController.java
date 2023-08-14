@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 //@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
@@ -36,14 +38,9 @@ public class HelpBoardController {
             HttpServletRequest request
     ) {
         try {
-            String userEmail = jwtController.getUserEmail(request);
-            if (userEmail != null && !userEmail.isEmpty()) {
-                // 로그인된 경우
-                return helpBoardService.getHelpBoards(pageable, region2DepthName);
-            } else {
-                // 로그인되지 않은 경우
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-            }
+            String decodedRegion2DepthName = URLDecoder.decode(region2DepthName, StandardCharsets.UTF_8.name());
+
+            return helpBoardService.getHelpBoards(pageable,decodedRegion2DepthName);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

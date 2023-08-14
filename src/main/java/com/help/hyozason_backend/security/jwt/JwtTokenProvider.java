@@ -6,6 +6,7 @@ import com.help.hyozason_backend.exception.AuthErrorCode;
 import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.security.auth.PrincipalDetails;
 import com.help.hyozason_backend.security.auth.PrincipalDetailsService;
+import com.help.hyozason_backend.security.redis.RedisUtil;
 import io.jsonwebtoken.*;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,19 +31,33 @@ public class JwtTokenProvider {
     private String refreshSecretKey;
 
 //    private String accessSecretKey;
-
+    private final RedisUtil redisUtil;
     private final PrincipalDetailsService principalDetailsService;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String REFRESH_HEADER = "refreshToken";
 //    private static final long TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L;  // 유효기간 24시간
-    private static final long TOKEN_VALID_TIME = 1000 * 60L;
+    private static final long TOKEN_VALID_TIME = 1000 * 60L*60L;
     private static final long REF_TOKEN_VALID_TIME = 1000 * 60L * 60L * 24L * 60L;  // 유효기간 2달
 
     @PostConstruct
     protected void init() {
         jwtSecretKey = Base64.getEncoder().encodeToString(jwtSecretKey.getBytes());
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
+    }
+    public Long getExpiration(String token) {
+        try {
+            Claims claims = Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token).getBody();
+            Date expiration = claims.getExpiration();
+            Date now = new Date();
+            return expiration.getTime() - now.getTime();
+        } catch (ExpiredJwtException e) {
+            // 토큰이 만료되었을 경우
+            return 0L;
+        } catch (Exception e) {
+            // 유효하지 않은 토큰 또는 파싱 오류 등의 예외 처리
+            return null;
+        }
     }
 
     public String getUserPk(String token) {
@@ -134,9 +149,11 @@ public class JwtTokenProvider {
     }
     //AccessToken 유효성 검사
     public boolean validateToken(String token) {
-
         try {
             Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(token);
+            if(redisUtil.hasKeyBlackList(token)) {
+                return false;
+            }
             return true;
         } catch (SecurityException | MalformedJwtException e) {
             System.out.println(e);

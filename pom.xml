@@ -99,11 +99,7 @@
             <version>1.2.17</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt</artifactId>
-            <version>0.9.1</version>
-        </dependency>
+
 
         <dependency>
             <groupId>org.apache.httpcomponents.client5</groupId>
@@ -125,6 +121,13 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>3.1.2</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+
 
     </dependencies>
 
