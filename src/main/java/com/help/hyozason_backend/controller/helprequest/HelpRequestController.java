@@ -1,6 +1,7 @@
 package com.help.hyozason_backend.controller.helprequest;
 
 
+import com.help.hyozason_backend.controller.jwt.JwtController;
 import com.help.hyozason_backend.dto.helprequest.HelpRequestDTO;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.etc.HelpResponse;
@@ -9,7 +10,10 @@ import com.help.hyozason_backend.etc.ResponseService;
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
 import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,8 +21,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +37,8 @@ public class HelpRequestController extends ResponseService {
     private final JwtTokenProvider jwtTokenProvider;
     private final SimpMessageSendingOperations messagingTemplate;
 
+    //private JwtController jwtController;
+
     @Autowired
     public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtTokenProvider jwtTokenProvider,SimpMessageSendingOperations messagingTemplate) {
         this.helpRequestService = helpRequestService;
@@ -41,6 +46,14 @@ public class HelpRequestController extends ResponseService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.messagingTemplate = messagingTemplate;
     }
+
+    /*@Autowired
+    public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtController jwtController) {
+        this.helpRequestService = helpRequestService;
+        this.helpUserRepository = helpUserRepository;
+        this.jwtController = jwtController;
+    }*/
+
 
     @MessageMapping("/hello")
     public void message(Message message){
@@ -102,8 +115,45 @@ public class HelpRequestController extends ResponseService {
             helpRequestService.notifyUserHelpAccepted(helpBoardId,helperUserEntity,helpEmail);
             return setResponse(200,"도움 요청 수락 성공",helpEmail);
         }
-
     }
+
+
+    /*@PostMapping("/write")
+    public ResponseEntity<Long> writeHelpRequest(@RequestBody HelpRequestDTO helpRequestDTO, HttpServletRequest request) throws Exception {
+        try {
+            String userEmail = jwtController.getUserEmail(request);
+            if(userEmail != null && !userEmail.isEmpty()) {
+                Long result = helpRequestService.writeHelpRequest(helpRequestDTO, userEmail);
+                return ResponseEntity.ok(result);
+            }
+            else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PostMapping("/accept/{helpBoardId}")
+    public ResponseEntity<String> acceptHelpRequest(@PathVariable Long helpBoardId, @RequestBody HelpUserEntity helperUserEntity, HttpServletRequest request) {
+        try {
+            String userEmail = jwtController.getUserEmail(request);
+            if (userEmail != null && !userEmail.isEmpty()) {
+                String result = helpRequestService.acceptHelpRequest(helpBoardId, helperUserEntity);
+                if (result != null) {
+                    return ResponseEntity.ok("Help request accepted and notifications sent.");
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Help request already accepted or not found.");
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }*/
 
 
 }

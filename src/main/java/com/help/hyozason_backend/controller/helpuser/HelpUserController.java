@@ -76,15 +76,6 @@ public class HelpUserController {
         return ResponseEntity.ok("Access granted!");
     }
 
-    @GetMapping("/access/denied")
-    public ResponseEntity.HeadersBuilder<?> errorTest() {
-        // 처리 로직
-        return ResponseEntity.notFound();
-    }
-
-
-
-
-
-
 }
+
+

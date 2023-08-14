@@ -183,4 +183,22 @@ public class JwtTokenProvider {
             throw new BaseException(AuthErrorCode.EMPTY_JWT);
         }
     }
+
+    public String getAccessToken(HttpServletRequest request) {
+        String token = resolveBearer(request);
+        if (token != null) {
+            try {
+                validateToken(token);
+                return token;
+            } catch (BaseException e) {
+                System.out.println("Error: " + e.getErrorCode());
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            System.out.println("Error: Invalid or missing token");
+            new Throwable().printStackTrace();
+            return null;
+        }
+    }
 }

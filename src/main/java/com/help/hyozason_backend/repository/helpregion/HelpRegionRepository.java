@@ -8,10 +8,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface HelpRegionRepository extends JpaRepository<HelpRegionEntity,String>{
 
+
     HelpRegionEntity findByUserEmail(String userEmail);
+
+    List<HelpRegionEntity> findByRegionInfo1(String regionInfo1);
 
 }
 
