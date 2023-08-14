@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface HelpRegionRepository extends JpaRepository<HelpRegionEntity,String>{
-    List<HelpRegionEntity> findByRegion2DepthName(String region_2depth_name);
+    List<HelpRegionEntity> findByRegionInfo1(String regionInfo1);
 }
 
 

@@ -33,12 +33,12 @@ public class HelpBoardService extends ResponseService {
         try {
             List<HelpBoardDTO> helpBoardDTOList = new ArrayList<>();
 
-            // region2DepthName, region3DepthName에 맞는 HelpRegionEntity 조회
-            List<HelpRegionEntity> matchingRegions = helpRegionRepository.findByRegion2DepthName(region_2depth_name);
+            // region_2depth_name에 맞는 HelpRegionEntity 조회
+            List<HelpRegionEntity> matchingRegions = helpRegionRepository.findByRegionInfo1(region_2depth_name);
 
             // 각 리전 정보별로 HelpBoardEntity 조회하여 DTO로 변환하고 리스트에 추가
             for (HelpRegionEntity region : matchingRegions) {
-                Page<HelpBoardEntity> results = helpBoardRepository.findByHelpLocation_Region2DepthName(region.getRegionInfo1(), pageable);
+                Page<HelpBoardEntity> results = helpBoardRepository.findByLocationInfo(region.getRegionInfo1(), pageable);
                 helpBoardDTOList.addAll(
                         results.getContent().stream()
                                 .map(HelpBoardMapper.INSTANCE::toDTO)

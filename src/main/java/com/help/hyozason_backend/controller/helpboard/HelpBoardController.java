@@ -23,7 +23,6 @@ public class HelpBoardController {
     private final HelpBoardService helpBoardService;
     private JwtController jwtController;
 
-
     @Autowired
     public HelpBoardController(HelpBoardService helpBoardService, JwtController jwtController) {
         this.helpBoardService = helpBoardService;
