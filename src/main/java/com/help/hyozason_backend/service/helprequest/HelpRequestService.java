@@ -65,6 +65,7 @@ public class HelpRequestService extends ResponseService {
                     .helpCategory(helpRequestDTO.getHelpCategory())
                     .helpAccept(helpRequestDTO.getHelpAccept())
                     .build();
+            
             //RequestDTO 를 locationDTO로 매핑
             HelpLocationDTO locationDTO = HelpLocationDTO.builder()
                     .locationInfo(helpRequestDTO.getLocationInfo())
