@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Optional;
 
 @Service
 public class HelpRequestService extends ResponseService {
@@ -166,7 +167,105 @@ public class HelpRequestService extends ResponseService {
         );
 
         helpSmsService.sendSms(messageHelperDTO);
-
-
     }
+
+
+    /*public long writeHelpRequest(HelpRequestDTO helpRequestDTO, String userEmail) {
+        Long helpId =null;
+        //도움 요청 글 작성 및 저장
+        try{
+            //RequestDTO 를 BoardDTO로 매핑
+            HelpBoardDTO helpBoardDTO = HelpBoardDTO.builder()
+                    .helpName(helpRequestDTO.getHelpName())
+                    .helpCategory(helpRequestDTO.getHelpCategory())
+                    .helpAccept(helpRequestDTO.getHelpAccept())
+                    .build();
+            //RequestDTO 를 locationDTO로 매핑
+            HelpLocationDTO locationDTO = HelpLocationDTO.builder()
+                    .locationInfo(helpRequestDTO.getLocationInfo())
+                    *//*.longitude(helpRequestDTO.getLongitude())
+                    .latitude(helpRequestDTO.getLatitude())*//*
+                    .region_2depth_name(helpRequestDTO.getRegion_2depth_name())
+                    //.regionInfo2(helpRequestDTO.getRegionInfo2())
+                    .userEmail(userEmail)
+                    .build();
+
+            //HelpBoardDTO 를 Entity로 매핑
+            HelpBoardEntity helpBoardEntity = HelpBoardMapper.INSTANCE.toEntity(helpBoardDTO);
+            //HelpLocationDTO 를 Entity로 매핑
+            HelpLocationEntity helpLocationEntity = HelpLocationMapper.INSTANCE.toEntity(locationDTO);
+
+            helpBoardRepository.save(helpBoardEntity);
+            helpLocationRepository.save(helpLocationEntity);
+
+            //entity 는 save 메소드 호출 이후에 id 필드에 자동으로 값이 할당된다고 함.
+            helpId =helpBoardEntity.getHelpId();
+
+            //userEmail을 이용하여 usertable 에서 유저 phone 정보 가져온다.
+            HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(userEmail);
+
+
+            //여기에 문자 api
+            MessageDTO messageDTO = new MessageDTO();
+            messageDTO.setTo(helpUserEntity.getUserPhone());
+            messageDTO.setContent("도움 요청중입니다. 잠시만 기다려주십시오");
+            helpSmsService.sendSms(messageDTO);
+
+
+            return helpId;
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return helpId;
+    }
+
+    //사용자 B가 도움을 수락했을때의 비즈니스 로직
+
+    public String acceptHelpRequest(Long helpBoardId, HelpUserEntity helperUserEntity) {
+        Optional<HelpBoardEntity> helpBoardOptional = helpBoardRepository.findById(helpBoardId);
+        if (helpBoardOptional.isPresent()) {
+            HelpBoardEntity helpBoardEntity = helpBoardOptional.get();
+            if (!"Accept".equals(helpBoardEntity.getHelpAccept())) {
+                helpBoardEntity.setHelpAccept("Accept");
+                helpBoardRepository.save(helpBoardEntity);
+
+                try {
+                    notifyUserHelpAccepted(helperUserEntity, helpBoardEntity.getUserEmail());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                return helpBoardEntity.getUserEmail();
+            } else {
+                // 이미 다른 사람이 수락한 요청인 경우
+                helpBoardRepository.deleteById(helpBoardId);
+            }
+        }
+        return null;
+    }
+
+
+    public void notifyUserHelpAccepted(HelpUserEntity helperUserEntity, String helpEmail) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+
+        HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(helpEmail);
+
+        //도움 요청
+        MessageDTO messageHelpDTO = new MessageDTO();
+        messageHelpDTO.setTo(helpUserEntity.getUserPhone());
+        messageHelpDTO.setContent("도움 요청이 수락되었습니다.\n"+
+                "도움을 수락한 사용자의 연락처 :"+helperUserEntity.getUserPhone()
+                +"\n도움을 수락한 사용자의 이름 :"+helperUserEntity.getUserName()
+        );
+        helpSmsService.sendSms(messageHelpDTO);
+
+        //도움 수락
+        MessageDTO messageHelperDTO = new MessageDTO();
+        messageHelperDTO.setTo(helperUserEntity.getUserPhone());
+        messageHelperDTO.setContent("도움 요청이 수락되었습니다.\n"+
+                "도움을 요청한 사용자의 연락처 :"+helpUserEntity.getUserPhone()
+                +"\n도움을 요청한 사용자의 이름 :"+helpUserEntity.getUserName()
+        );
+
+        helpSmsService.sendSms(messageHelperDTO);
+    }*/
 }

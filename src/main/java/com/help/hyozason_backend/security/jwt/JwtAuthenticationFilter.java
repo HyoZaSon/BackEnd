@@ -35,7 +35,16 @@ import java.io.IOException;
                 System.out.println("accessToken 정보 확인 +유효성 검사 통과");
                 Authentication authentication = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+
+                if (authentication != null && authentication.isAuthenticated()) {
+                    // 사용자가 인증되어 있는 경우
+                    System.out.println("authentication~~~~~~~~``" +authentication);
+                }else{
+                    System.out.println("authentication error!!!!!!");
+                }
+
             }
+
             chain.doFilter(request, response);
         }
 }

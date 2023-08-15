@@ -19,7 +19,7 @@ public class HelpUserEntity  {
     String userEmail;
 
     @Column(name = "userToken")
-    String refreshToken;
+    String userToken;
 
     @Column(name = "userName")
     String userName;
@@ -38,18 +38,18 @@ public class HelpUserEntity  {
 
 
 
-    public void changeRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+    public void changeRefreshToken(String userToken) {
+        this.userToken = userToken;
     }
 
-    public HelpUserEntity(String userEmail,String userName,  long userAge, String userGender,String userPhone,String userRole,String refreshToken ) {
+    public HelpUserEntity(String userEmail,String userName,  long userAge, String userGender,String userPhone,String userRole,String userToken ) {
         this.userEmail = userEmail;
         this.userName = userName;
         this.userAge = userAge;
         this.userGender = userGender;
         this.userPhone = userPhone;
         this.userRole = userRole;
-        this.refreshToken = refreshToken;
+        this.userToken = userToken;
     }
 
 }
