@@ -1,6 +1,7 @@
 package com.help.hyozason_backend.controller.helprequest;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.help.hyozason_backend.controller.jwt.JwtController;
 import com.help.hyozason_backend.dto.helprequest.HelpRequestDTO;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
@@ -37,8 +38,6 @@ public class HelpRequestController extends ResponseService {
     private final JwtTokenProvider jwtTokenProvider;
     private final SimpMessageSendingOperations messagingTemplate;
 
-    //private JwtController jwtController;
-
     @Autowired
     public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtTokenProvider jwtTokenProvider,SimpMessageSendingOperations messagingTemplate) {
         this.helpRequestService = helpRequestService;
@@ -46,14 +45,6 @@ public class HelpRequestController extends ResponseService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.messagingTemplate = messagingTemplate;
     }
-
-    /*@Autowired
-    public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtController jwtController) {
-        this.helpRequestService = helpRequestService;
-        this.helpUserRepository = helpUserRepository;
-        this.jwtController = jwtController;
-    }*/
-
 
     @MessageMapping("/hello")
     public void message(Message message){
@@ -65,11 +56,18 @@ public class HelpRequestController extends ResponseService {
     //사용자 A 도움 요청
     @MessageMapping("/requestHelp") // "/app/requestHelp" 로 접근해야함.
     @SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
-    public HelpResponse requestHelp(Message<HelpRequestDTO> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
+    public HelpResponse requestHelp(Message<String> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         Thread.sleep(1000);
 
         // 메시지의 내용물 가져오기
-        HelpRequestDTO helpRequestDTO = message.getPayload();
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonMessage = message.getPayload();
+
+        HelpRequestDTO helpRequestDTO = objectMapper.readValue(jsonMessage, HelpRequestDTO.class);
+
+        System.out.println("메시지 :" + helpRequestDTO);
+
+
         //토큰 값을 헤더에서 추출
         List<String> tokenHeaders = stompHeaderAccessor.wrap(message).getNativeHeader("Authorization");
         String token = tokenHeaders != null && !tokenHeaders.isEmpty() ? tokenHeaders.get(0) : null;
@@ -91,7 +89,7 @@ public class HelpRequestController extends ResponseService {
     //B 요청 수락
     @MessageMapping("/acceptHelp/{helpBoardId}")
     @SendToUser("/queue/acceptHelp")
-    public HelpResponse acceptHelp(@DestinationVariable Long helpBoardId, Message<HelpRequestDTO> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
+    public HelpResponse acceptHelp(@DestinationVariable Long helpBoardId, Message<String> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         //log.debug("Received message: {}",message);
 
         //토큰 값을 헤더에서 추출
