@@ -183,8 +183,8 @@ public class HelpRequestService extends ResponseService {
             //RequestDTO 를 locationDTO로 매핑
             HelpLocationDTO locationDTO = HelpLocationDTO.builder()
                     .locationInfo(helpRequestDTO.getLocationInfo())
-                    *//*.longitude(helpRequestDTO.getLongitude())
-                    .latitude(helpRequestDTO.getLatitude())*//*
+                    //.longitude(helpRequestDTO.getLongitude())
+                    //.latitude(helpRequestDTO.getLatitude())*
                     .region_2depth_name(helpRequestDTO.getRegion_2depth_name())
                     //.regionInfo2(helpRequestDTO.getRegionInfo2())
                     .userEmail(userEmail)
@@ -252,18 +252,18 @@ public class HelpRequestService extends ResponseService {
         //도움 요청
         MessageDTO messageHelpDTO = new MessageDTO();
         messageHelpDTO.setTo(helpUserEntity.getUserPhone());
-        messageHelpDTO.setContent("도움 요청이 수락되었습니다.\n"+
-                "도움을 수락한 사용자의 연락처 :"+helperUserEntity.getUserPhone()
-                +"\n도움을 수락한 사용자의 이름 :"+helperUserEntity.getUserName()
+        messageHelpDTO.setContent("도움 요청이 수락되었습니다.\n" +
+                "도움을 수락한 사용자의 연락처 :" + helperUserEntity.getUserPhone()
+                + "\n도움을 수락한 사용자의 이름 :" + helperUserEntity.getUserName()
         );
         helpSmsService.sendSms(messageHelpDTO);
 
         //도움 수락
         MessageDTO messageHelperDTO = new MessageDTO();
         messageHelperDTO.setTo(helperUserEntity.getUserPhone());
-        messageHelperDTO.setContent("도움 요청이 수락되었습니다.\n"+
-                "도움을 요청한 사용자의 연락처 :"+helpUserEntity.getUserPhone()
-                +"\n도움을 요청한 사용자의 이름 :"+helpUserEntity.getUserName()
+        messageHelperDTO.setContent("도움 요청이 수락되었습니다.\n" +
+                "도움을 요청한 사용자의 연락처 :" + helpUserEntity.getUserPhone()
+                + "\n도움을 요청한 사용자의 이름 :" + helpUserEntity.getUserName()
         );
 
         helpSmsService.sendSms(messageHelperDTO);
