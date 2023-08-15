@@ -62,7 +62,7 @@ public class StompHandler implements ChannelInterceptor {
                     if(jwtTokenProvider.validateToken(accessToken)){
                         System.out.println("토큰이 유효합니다.");
                         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userEntity.getRefreshToken(), userEntity, null);
+                                userEntity.getUserToken(), userEntity, null);
                         System.out.println("authorizated user '{}', setting security context"+ useremail);
 
                         if(SecurityContextHolder.getContext().getAuthentication() == null)
