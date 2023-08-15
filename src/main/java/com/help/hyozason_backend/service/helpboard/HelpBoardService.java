@@ -1,5 +1,6 @@
 package com.help.hyozason_backend.service.helpboard;
 
+import com.help.hyozason_backend.controller.jwt.JwtController;
 import com.help.hyozason_backend.dto.helpboard.HelpBoardDTO;
 import com.help.hyozason_backend.entity.helpboard.HelpBoardEntity;
 import com.help.hyozason_backend.entity.helpregion.HelpRegionEntity;
@@ -15,21 +16,20 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class HelpBoardService extends ResponseService {
     private final HelpBoardRepository helpBoardRepository;
-    private final HelpRegionRepository helpRegionRepository;
 
     @Autowired
-    public HelpBoardService(HelpBoardRepository helpBoardRepository, HelpRegionRepository helpRegionRepository) {
+    public HelpBoardService(HelpBoardRepository helpBoardRepository) {
         this.helpBoardRepository = helpBoardRepository;
-        this.helpRegionRepository = helpRegionRepository;
     }
 
-    public ResponseEntity<List<HelpBoardDTO>> getHelpBoards(Pageable pageable, String region_2depth_name) {
+    /*public ResponseEntity<List<HelpBoardDTO>> getHelpBoards(Pageable pageable, String region_2depth_name) {
         try {
             List<HelpBoardDTO> helpBoardDTOList = new ArrayList<>();
 
@@ -47,6 +47,31 @@ public class HelpBoardService extends ResponseService {
             }
 
             // 변환된 DTO 리스트를 ResponseEntity에 담아서 반환
+            return ResponseEntity.ok(helpBoardDTOList);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }*/
+
+    public ResponseEntity<List<HelpBoardDTO>> getHelpBoards(Pageable pageable, String userEmail) {
+        try {
+            List<HelpBoardDTO> helpBoardDTOList = new ArrayList<>();
+
+            if (userEmail == null) {
+                // userEmail이 null일 경우 처리
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Collections.emptyList());
+            }
+
+            // 사용자의 지역에 해당하는 글만 조회
+            Page<HelpBoardEntity> results = helpBoardRepository.findByLocationInfo(userEmail, pageable);
+
+            helpBoardDTOList.addAll(
+                    results.getContent().stream()
+                            .map(HelpBoardMapper.INSTANCE::toDTO)
+                            .collect(Collectors.toList())
+            );
+
             return ResponseEntity.ok(helpBoardDTOList);
         } catch (Exception e) {
             e.printStackTrace();
