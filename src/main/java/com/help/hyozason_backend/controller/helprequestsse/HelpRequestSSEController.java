@@ -6,14 +6,15 @@ import com.help.hyozason_backend.dto.helprequest.HelpRequestDTO;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.etc.HelpResponse;
 import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
+import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
 import com.help.hyozason_backend.service.helprequestsse.HelpRequestSSEService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Enumeration;
 import java.util.Map;
@@ -32,13 +33,15 @@ public class HelpRequestSSEController {
     private final HelpRequestSSEService helpRequestSSEService;
     private final JwtController jwtController;
     private final HelpRequestService helpRequestService;
+    private final JwtTokenProvider jwtTokenProvider;
     private final HelpUserRepository helpUserRepository;
-    public HelpRequestSSEController(SseEmitters sseEmitters, HelpRequestSSEService helpRequestSSEService, JwtController jwtController, HelpRequestService helpRequestService, HelpUserRepository helpUserRepository) {
+    public HelpRequestSSEController(SseEmitters sseEmitters, HelpRequestSSEService helpRequestSSEService, JwtController jwtController, HelpRequestService helpRequestService, JwtTokenProvider jwtTokenProvider, HelpUserRepository helpUserRepository) {
         this.sseEmitters = sseEmitters;
         this.helpRequestSSEService = helpRequestSSEService;
         this.jwtController = jwtController;
 
         this.helpRequestService = helpRequestService;
+        this.jwtTokenProvider = jwtTokenProvider;
         this.helpUserRepository = helpUserRepository;
     }
     private static final Logger logger = Logger.getLogger(HelpRequestSSEController.class.getName());
@@ -88,14 +91,17 @@ public class HelpRequestSSEController {
 
 
     @PostMapping("/requestHelp")
-    public ResponseEntity<HelpResponse> requestHelp(@RequestBody HelpRequestDTO helpRequestDTO, HttpServletRequest request) throws Exception {
+    public ResponseEntity<Map<String, Serializable>> requestHelp(@RequestBody HelpRequestDTO helpRequestDTO, HttpServletRequest request) throws Exception {
         try {
-            String userEmail = jwtController.getUserEmail(request);
+            //토큰 값 log
+            System.out.println("token :"+request.getHeader("Authorization"));
+            //String userEmail = jwtController.getUserEmail(request);
+            String userEmail = jwtTokenProvider.getMemberIdByToken(request.getHeader("Authorization"));
             if (userEmail != null && !userEmail.isEmpty()) {
                 Long helpBoardId = helpRequestSSEService.writeHelpRequest(helpRequestDTO, userEmail);
 
                 // 생성된 도움 요청 정보를 클라이언트로 전송
-                return ResponseEntity.ok((HelpResponse) Map.of("message","help request board upload success","helpBoardId", helpBoardId));
+                return ResponseEntity.ok(Map.of("message","help request board upload success","helpBoardId", helpBoardId));
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
@@ -110,22 +116,25 @@ public class HelpRequestSSEController {
      * 요청 수락
      * */
     @PostMapping("/acceptHelp/{helpBoardId}")
-    public ResponseEntity<HelpResponse> acceptHelpRequest(@PathVariable Long helpBoardId, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Serializable>>acceptHelpRequest(@PathVariable Long helpBoardId, HttpServletRequest request) {
         try {
             //B 회원 정보 추출
-            String userEmail = jwtController.getUserEmail(request);
+            System.out.println("helper token :"+request.getHeader("Authorization"));
+
+            String userEmail = jwtTokenProvider.getMemberIdByToken(request.getHeader("Authorization"));
+
             HelpUserEntity helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
 
             if (userEmail != null && helperUserEntity != null) {
                 String helpEmail = helpRequestSSEService.acceptHelpRequest(helpBoardId);
                 if (helpEmail != null) {
                     helpRequestSSEService.notifyUserHelpAccepted(helpBoardId,helperUserEntity,helpEmail);
-                    return ResponseEntity.ok((HelpResponse) Map.of("message", "도움 요청이 수락되었습니다", "helpBoardId", helpBoardId));
+                    return ResponseEntity.ok(Map.of("message", "도움 요청이 수락되었습니다", "helpBoardId", helpBoardId));
 
                 } else {
                     helpRequestSSEService.notifyUserHelpDenided(helpBoardId, helperUserEntity);
 
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body((HelpResponse) Map.of("message", "Help request already accepted or not found.", "helpBoardId",helpBoardId));
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Help request already accepted or not found.", "helpBoardId",helpBoardId));
                 }
             } else {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
