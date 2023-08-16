@@ -9,21 +9,23 @@ import com.help.hyozason_backend.repository.helpuser.HelpUserRepository;
 import com.help.hyozason_backend.service.helprequest.HelpRequestService;
 import com.help.hyozason_backend.service.helprequestsse.HelpRequestSSEService;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.HttpStatus;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 //@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
 @RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
 @RequestMapping("/help/helprequest")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @Slf4j
 public class HelpRequestSSEController {
     private final SseEmitters sseEmitters;
@@ -39,9 +41,10 @@ public class HelpRequestSSEController {
         this.helpRequestService = helpRequestService;
         this.helpUserRepository = helpUserRepository;
     }
+    private static final Logger logger = Logger.getLogger(HelpRequestSSEController.class.getName());
 
-    @GetMapping(value = "/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity connect(@RequestHeader(value = "Authorization", required = false, defaultValue = "")HttpRequest request){
+    @GetMapping(value = "/connect", produces =  MediaType.TEXT_EVENT_STREAM_VALUE + ";charset=UTF-8")
+    public ResponseEntity<SseEmitter> connect(HttpServletRequest request)  {
         SseEmitter emitter = new SseEmitter(); //생성자를 통해 만료시간을 설정할 수 있습니다. 기본 30분,  SseEmitter emitter = new SseEmitter(60 * 1000L);
         sseEmitters.add(emitter); //생성된 SseEmitter 객체는 향후 이벤트가 발생했을 때, 해당 클라이언트로 이벤트를 전송하기 위해 사용되므로 서버에서 저장
         try {
@@ -49,6 +52,24 @@ public class HelpRequestSSEController {
              *  Emitter를 생성하고 나서 만료 시간까지 아무런 데이터도 보내지 않으면 재연결 요청시 503 Service Unavailable 에러가 발생할 수 있습니다.
              *  따라서 처음 SSE 연결 시 더미 데이터를 전달해주는 것이 안전합니다.
              * */
+            logger.info("Request headers:");
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                logger.info(headerName + ": " + request.getHeader(headerName));
+            }
+
+            emitter.send(SseEmitter.event()
+                    .name("connect")
+                    .data("connected!"));
+
+            // 응답 헤더 및 상태 코드 로그 출력
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(new MediaType("text", "event-stream", Charset.forName("UTF-8")));
+            logger.info("Response headers:");
+            headers.forEach((key, value) -> logger.info(key + ": " + value));
+            logger.info("Status code: " + HttpStatus.OK.value());
+
             emitter.send(SseEmitter.event()
                     .name("connect")  // 해당 이벤트의 이름 지정
                     .data("connected!"));// 503 에러 방지를 위한 더미 데이터

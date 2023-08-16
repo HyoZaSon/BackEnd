@@ -35,7 +35,7 @@ public class HelpRequestService extends ResponseService {
     private final HelpUserRepository helpUserRepository;
     //private HelpRequestHandler helpRequestHandler;
     private final HelpSmsService helpSmsService;
-    private final SimpMessageSendingOperations messagingTemplate;
+    //private final SimpMessageSendingOperations messagingTemplate;
 
     @Autowired
     public HelpRequestService(HelpBoardRepository helpBoardRepository, HelpLocationRepository helpLocationRepository, HelpUserRepository helpUserRepository, HelpSmsService helpSmsService, SimpMessageSendingOperations messagingTemplate) {
@@ -44,7 +44,7 @@ public class HelpRequestService extends ResponseService {
         this.helpUserRepository = helpUserRepository;
         //this.helpRequestHandler = helpRequestHandler;
         this.helpSmsService = helpSmsService;
-        this.messagingTemplate = messagingTemplate;
+        //this.messagingTemplate = messagingTemplate;
     }
 
 
@@ -55,7 +55,7 @@ public class HelpRequestService extends ResponseService {
      * 그러면 그냥 db에 저장할때에는 if문으로 판단해서 추가하는걸로.
      * */
 
-    @Transactional
+    /*@Transactional
     public long writeHelpRequest(HelpRequestDTO helpRequestDTO, String userEmail) {
         Long helpId =null;
         //도움 요청 글 작성 및 저장
@@ -167,61 +167,48 @@ public class HelpRequestService extends ResponseService {
         );
 
         helpSmsService.sendSms(messageHelperDTO);
+    }*/
+
+
+    @Transactional
+    public HelpBoardEntity createHelpBoard(HelpRequestDTO request, String userEmail) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+
+        // Create HelpLocationEntity
+        HelpLocationEntity helpLocation = HelpLocationEntity.builder()
+                .locationInfo(request.getLocationInfo())
+                .userEmail(userEmail)
+                .region_2depth_name(request.getRegion_2depth_name())
+                .region_3depth_name(request.getRegion_3depth_name())
+                .mountain_yn(request.getMountain_yn())
+                .main_address_no(request.getMain_address_no())
+                .sub_address_no(request.getSub_address_no())
+                .zip_code(request.getZip_code())
+                .build();
+
+        HelpLocationEntity savedHelpLocation = helpLocationRepository.save(helpLocation);
+
+        // Create HelpBoardEntity
+        HelpBoardEntity helpBoard = HelpBoardEntity.builder()
+                .helpName(request.getHelpName())
+                .helpCategory(request.getHelpCategory())
+                .helpAccept(request.getHelpAccept())
+                .locationInfo(savedHelpLocation.getLocationInfo())  // Set the saved locationInfo
+                .userEmail(userEmail)
+                .build();
+
+        HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(userEmail);
+        String helpUserPhone = removeHyphens(helpUserEntity.getUserPhone());
+
+        MessageDTO messageDTO = new MessageDTO();
+        messageDTO.setTo(helpUserPhone);
+        messageDTO.setContent("도움 요청중입니다. 잠시만 기다려주십시오");
+        helpSmsService.sendSms(messageDTO);
+
+        return helpBoardRepository.save(helpBoard);
     }
 
 
-    /*public long writeHelpRequest(HelpRequestDTO helpRequestDTO, String userEmail) {
-        Long helpId =null;
-        //도움 요청 글 작성 및 저장
-        try{
-            //RequestDTO 를 BoardDTO로 매핑
-            HelpBoardDTO helpBoardDTO = HelpBoardDTO.builder()
-                    .helpName(helpRequestDTO.getHelpName())
-                    .helpCategory(helpRequestDTO.getHelpCategory())
-                    .helpAccept(helpRequestDTO.getHelpAccept())
-                    .build();
-            //RequestDTO 를 locationDTO로 매핑
-            HelpLocationDTO locationDTO = HelpLocationDTO.builder()
-                    .locationInfo(helpRequestDTO.getLocationInfo())
-                    //.longitude(helpRequestDTO.getLongitude())
-                    //.latitude(helpRequestDTO.getLatitude())*
-                    .region_2depth_name(helpRequestDTO.getRegion_2depth_name())
-                    //.regionInfo2(helpRequestDTO.getRegionInfo2())
-                    .userEmail(userEmail)
-                    .build();
-
-            //HelpBoardDTO 를 Entity로 매핑
-            HelpBoardEntity helpBoardEntity = HelpBoardMapper.INSTANCE.toEntity(helpBoardDTO);
-            //HelpLocationDTO 를 Entity로 매핑
-            HelpLocationEntity helpLocationEntity = HelpLocationMapper.INSTANCE.toEntity(locationDTO);
-
-            helpBoardRepository.save(helpBoardEntity);
-            helpLocationRepository.save(helpLocationEntity);
-
-            //entity 는 save 메소드 호출 이후에 id 필드에 자동으로 값이 할당된다고 함.
-            helpId =helpBoardEntity.getHelpId();
-
-            //userEmail을 이용하여 usertable 에서 유저 phone 정보 가져온다.
-            HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(userEmail);
-
-
-            //여기에 문자 api
-            MessageDTO messageDTO = new MessageDTO();
-            messageDTO.setTo(helpUserEntity.getUserPhone());
-            messageDTO.setContent("도움 요청중입니다. 잠시만 기다려주십시오");
-            helpSmsService.sendSms(messageDTO);
-
-
-            return helpId;
-
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        return helpId;
-    }
-
-    //사용자 B가 도움을 수락했을때의 비즈니스 로직
-
+    @Transactional
     public String acceptHelpRequest(Long helpBoardId, HelpUserEntity helperUserEntity) {
         Optional<HelpBoardEntity> helpBoardOptional = helpBoardRepository.findById(helpBoardId);
         if (helpBoardOptional.isPresent()) {
@@ -249,23 +236,28 @@ public class HelpRequestService extends ResponseService {
 
         HelpUserEntity helpUserEntity = helpUserRepository.findByUserEmail(helpEmail);
 
+        String helpUserPhoneWithoutHyphen = removeHyphens(helpUserEntity.getUserPhone());
+        String helperUserPhoneWithoutHyphen = removeHyphens(helperUserEntity.getUserPhone());
+
         //도움 요청
         MessageDTO messageHelpDTO = new MessageDTO();
-        messageHelpDTO.setTo(helpUserEntity.getUserPhone());
+        messageHelpDTO.setTo(helpUserPhoneWithoutHyphen);
         messageHelpDTO.setContent("도움 요청이 수락되었습니다.\n" +
-                "도움을 수락한 사용자의 연락처 :" + helperUserEntity.getUserPhone()
-                + "\n도움을 수락한 사용자의 이름 :" + helperUserEntity.getUserName()
+                "도움을 수락한 사용자의 연락처 : " + helperUserEntity.getUserPhone()
         );
         helpSmsService.sendSms(messageHelpDTO);
 
         //도움 수락
         MessageDTO messageHelperDTO = new MessageDTO();
-        messageHelperDTO.setTo(helperUserEntity.getUserPhone());
+        messageHelperDTO.setTo(helperUserPhoneWithoutHyphen);
         messageHelperDTO.setContent("도움 요청이 수락되었습니다.\n" +
-                "도움을 요청한 사용자의 연락처 :" + helpUserEntity.getUserPhone()
-                + "\n도움을 요청한 사용자의 이름 :" + helpUserEntity.getUserName()
+                "도움을 요청한 사용자의 연락처 : " + helpUserEntity.getUserPhone()
         );
 
         helpSmsService.sendSms(messageHelperDTO);
-    }*/
+    }
+
+    public static String removeHyphens(String phoneNumber) {
+        return phoneNumber.replace("-", "");
+    }
 }
