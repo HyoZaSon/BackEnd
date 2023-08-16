@@ -39,70 +39,96 @@ public class StompHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         return message;
     }*/
+
+    /*
     @Override
-    public Message<?> preSend(Message<?> message, MessageChannel channel){
-        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-        System.out.println("message: "+message.getPayload());
-        System.out.println("토큰 : "+accessor.getFirstNativeHeader("Authorization"));
-        System.out.println("커맨드 : "+accessor.getCommand());
-        System.out.println("stomp accessor : "+accessor.getDestination());
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        try {
 
-        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            if (accessor.getNativeHeader("Authorization") != null) {
-                List<String> authorization = accessor.getNativeHeader("Authorization");
-                System.out.println("authorization : "+authorization);
-                String accessToken = accessor.getFirstNativeHeader("Authorization");
-                System.out.println("accessToken : "+accessToken);
-                String useremail = jwtTokenProvider.getUserPk(accessToken);
-                System.out.println("useremail : "+useremail);
+            StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+            System.out.println("message: " + message.getPayload());
+            System.out.println("토큰 : " + accessor.getFirstNativeHeader("Authorization"));
+            System.out.println("커맨드 : " + accessor.getCommand());
 
-                HelpUserEntity userEntity = helpUserRepository.findByUserEmail(useremail);
-                if(useremail !=null){
-                    System.out.println("유저가 있습니다.");
-                    if(jwtTokenProvider.validateToken(accessToken)){
-                        System.out.println("토큰이 유효합니다.");
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                                userEntity.getUserToken(), userEntity, null);
-                        System.out.println("authorizated user '{}', setting security context"+ useremail);
+            if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                if (accessor.getNativeHeader("Authorization") != null) {
+                    //List<String> authorization = accessor.getNativeHeader("Authorization");
+                    String accessToken = accessor.getFirstNativeHeader("Authorization");
+                    System.out.println("accessToken : " + accessToken);
 
-                        if(SecurityContextHolder.getContext().getAuthentication() == null)
-                            SecurityContextHolder.getContext().setAuthentication(authentication);
-                        accessor.setUser(authentication);
+                    String useremail = jwtTokenProvider.getMemberIdByToken(accessToken);
+                    System.out.println("useremail : " + useremail);
+
+                    HelpUserEntity userEntity = helpUserRepository.findByUserEmail(useremail);
+                    if (useremail != null) {
+                        System.out.println("유저가 있습니다.");
+                        if (jwtTokenProvider.validateToken(accessToken)) {
+                            System.out.println("토큰이 유효합니다.");
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    userEntity.getUserToken(), userEntity, null);
+
+                            if (SecurityContextHolder.getContext().getAuthentication() == null)
+                                SecurityContextHolder.getContext().setAuthentication(authentication);
+                            accessor.setUser(authentication);
+                        } else {
+                            System.out.println("토큰이 유효하지 않습니다.");
+                        }
+                        if (StompCommand.SEND.equals(accessor.getCommand())) {
+                            boolean isSent = channel.send(message);
+                            System.out.println("Message sent " + isSent);
+
+                            if (isSent)
+                                return message;
+                        }
+
+                    } else {
+                        System.out.println("유저가 없습니다.");
                     }
-                    else{
-                        System.out.println("토큰이 유효하지 않습니다.");
-                    }
-                    if(StompCommand.SEND.equals(accessor.getCommand())) {
-                        boolean isSent = channel.send(message);
-                        System.out.println("Message sent "+isSent);
-
-                        if(isSent)
-                            return message;
-                    }
-
                 }
-                else{
-                    System.out.println("유저가 없습니다.");
-                }
+                //jwtTokenProvider.validateToken(Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7));
+
+            } else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (Objects.nonNull(authentication))
+                    System.out.println("Disconnected Auth : " + authentication.getName());
+
+                else
+                    System.out.println("Disconnected Sess : " + accessor.getSessionId());
+
             }
-            //jwtTokenProvider.validateToken(Objects.requireNonNull(accessor.getFirstNativeHeader("Authorization")).substring(7));
 
-        }
-        else if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (Objects.nonNull(authentication))
-                System.out.println("Disconnected Auth : " + authentication.getName());
-
-            else
-                System.out.println("Disconnected Sess : " + accessor.getSessionId());
-
+            return message;
+        } catch (Exception e) {
+            // 예외 처리
+            System.err.println("Exception occurred: " + e.getMessage());
+            e.printStackTrace();
+            // 예외를 throw하거나 처리하거나, 다른 예외 처리 로직을 추가해야 합니다.
         }
 
         return message;
+    }
+
+*/
+    @Override
+    public Message<?> preSend(Message<?> message, MessageChannel channel) {
+        StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        System.out.println("message: " + message.getPayload());
+        System.out.println("토큰 : " + accessor.getFirstNativeHeader("Authorization"));
+        System.out.println("커맨드 : " + accessor.getCommand());
+
+        if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+            String accessToken = accessor.getFirstNativeHeader("Authorization");
+            String userEmail = jwtTokenProvider.getMemberIdByToken(accessToken);
+            HelpUserEntity userEntity = helpUserRepository.findByUserEmail(userEmail);
+
+            if (userEntity != null && jwtTokenProvider.validateToken(accessToken)) {
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userEntity.getUserToken(), userEntity, null);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                accessor.setUser(authentication);
+            }
         }
 
+        return message;
+    }
 
-
-
-
-}
+    }

@@ -16,34 +16,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 
-//@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
-@RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
-@RequestMapping("/help/helprequest")
-public class HelpRequestController extends ResponseService {
+
+public class HelpRequestController extends ResponseService{
 
     private final HelpRequestService helpRequestService;
     private final HelpUserRepository helpUserRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final SimpMessageSendingOperations messagingTemplate;
-
+    private final JwtController jwtController;
     @Autowired
-    public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtTokenProvider jwtTokenProvider,SimpMessageSendingOperations messagingTemplate) {
+    public HelpRequestController(HelpRequestService helpRequestService, HelpUserRepository helpUserRepository, JwtTokenProvider jwtTokenProvider, SimpMessageSendingOperations messagingTemplate, JwtController jwtController) {
         this.helpRequestService = helpRequestService;
         this.helpUserRepository = helpUserRepository;
         this.jwtTokenProvider = jwtTokenProvider;
         this.messagingTemplate = messagingTemplate;
+        this.jwtController = jwtController;
     }
 
     @MessageMapping("/hello")
@@ -56,12 +52,12 @@ public class HelpRequestController extends ResponseService {
     //사용자 A 도움 요청
     @MessageMapping("/requestHelp") // "/app/requestHelp" 로 접근해야함.
     @SendTo("/topic/request") // 처리를 마친 후 결과메시지를 설정한 경로 - 구독시에 구독자들에게 알림이 간다.
-    public HelpResponse requestHelp(Message<String> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
+    public HelpResponse requestHelp(Message<?> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         Thread.sleep(1000);
 
         // 메시지의 내용물 가져오기
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonMessage = message.getPayload();
+        String jsonMessage = (String) message.getPayload();
 
         HelpRequestDTO helpRequestDTO = objectMapper.readValue(jsonMessage, HelpRequestDTO.class);
 
@@ -72,7 +68,7 @@ public class HelpRequestController extends ResponseService {
         List<String> tokenHeaders = stompHeaderAccessor.wrap(message).getNativeHeader("Authorization");
         String token = tokenHeaders != null && !tokenHeaders.isEmpty() ? tokenHeaders.get(0) : null;
         //회원 정보 추출
-        String userEmail = jwtTokenProvider.getUserPk(token);
+        String userEmail = jwtTokenProvider.getMemberIdByToken(token);
 
         //글 작성 service 메소드 호출, 고유한 helpId return
         long helpBoardId = helpRequestService.writeHelpRequest(helpRequestDTO, userEmail);
@@ -86,17 +82,22 @@ public class HelpRequestController extends ResponseService {
         return setResponse(200,"help request board upload success",helpBoardId);
     }
 
+    /**
+     * StompHeaderAccessor의 필수 헤더
+     * {@code @Header} Authorization: 인증 accessToken
+     * {@code @Header} helpBoardId: 요청 게시글 Id
+     */
     //B 요청 수락
     @MessageMapping("/acceptHelp/{helpBoardId}")
     @SendToUser("/queue/acceptHelp")
-    public HelpResponse acceptHelp(@DestinationVariable Long helpBoardId, Message<String> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
+    public HelpResponse acceptHelp(@DestinationVariable Long helpBoardId, Message<?> message, StompHeaderAccessor stompHeaderAccessor) throws Exception {
         //log.debug("Received message: {}",message);
 
         //토큰 값을 헤더에서 추출
         List<String> tokenHeaders = stompHeaderAccessor.wrap(message).getNativeHeader("Authorization");
         String token = tokenHeaders != null && !tokenHeaders.isEmpty() ? tokenHeaders.get(0) : null;
         //B 회원 정보 추출
-        String userEmail = jwtTokenProvider.getUserPk(token);
+        String userEmail = jwtTokenProvider.getMemberIdByToken(token);
 //        Optional <HelpUserEntity> helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
         HelpUserEntity helperUserEntity = helpUserRepository.findByUserEmail(userEmail);
 
@@ -114,9 +115,8 @@ public class HelpRequestController extends ResponseService {
             return setResponse(200,"도움 요청 수락 성공",helpEmail);
         }
     }
-
-
-    /*@PostMapping("/write")
+/*
+    @PostMapping("/helpwrite")
     public ResponseEntity<Long> writeHelpRequest(@RequestBody HelpRequestDTO helpRequestDTO, HttpServletRequest request) throws Exception {
         try {
             String userEmail = jwtController.getUserEmail(request);
@@ -133,7 +133,7 @@ public class HelpRequestController extends ResponseService {
         }
     }
 
-    @PostMapping("/accept/{helpBoardId}")
+    @PostMapping("/helpaccept/{helpBoardId}")
     public ResponseEntity<String> acceptHelpRequest(@PathVariable Long helpBoardId, @RequestBody HelpUserEntity helperUserEntity, HttpServletRequest request) {
         try {
             String userEmail = jwtController.getUserEmail(request);
@@ -151,7 +151,8 @@ public class HelpRequestController extends ResponseService {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }*/
+    }
 
+*/
 
 }
