@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.help.hyozason_backend.controller.jwt.JwtController;
 import com.help.hyozason_backend.dto.helprequest.HelpRequestDTO;
 import com.help.hyozason_backend.entity.helpboard.HelpBoardEntity;
+import com.help.hyozason_backend.entity.helpboard.HelpBoardEntity;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.etc.HelpResponse;
 import com.help.hyozason_backend.etc.ResponseService;
@@ -18,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.Message;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -34,10 +33,8 @@ import java.util.List;
 import java.util.Optional;
 
 
-//@RequiredArgsConstructor //Lombok으로 스프링에서 DI(의존성 주입)의 방법 중에 생성자 주입을 임의의 코드없이 자동으로 설정해주는 어노테이션
-@RestController //@RestController 어노테이션은 사용된 클래스의 모든 메서드에 자동으로 JSON 변환을 적용
-@RequestMapping("/help/helprequest")
-public class HelpRequestController extends ResponseService {
+
+public class HelpRequestController extends ResponseService{
 
     private final HelpRequestService helpRequestService;
     private final HelpUserRepository helpUserRepository;
