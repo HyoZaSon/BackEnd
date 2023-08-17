@@ -1,7 +1,6 @@
 package com.help.hyozason_backend.service.helpuser;
 
 
-import com.help.hyozason_backend.dto.helpregion.HelpRegionDTO;
 import com.help.hyozason_backend.dto.helpuser.HelpUserDTO;
 import com.help.hyozason_backend.dto.helpuser.MemberRequestDto;
 import com.help.hyozason_backend.dto.helpuser.MemberResponseDto;
@@ -9,7 +8,6 @@ import com.help.hyozason_backend.entity.helpregion.HelpRegionEntity;
 import com.help.hyozason_backend.entity.helpreward.HelpRewardEntity;
 import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 
-import com.help.hyozason_backend.exception.AuthErrorCode;
 import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.exception.MemberErrorCode;
 import com.help.hyozason_backend.repository.helpregion.HelpRegionRepository;
@@ -19,15 +17,13 @@ import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
 import com.help.hyozason_backend.security.redis.RedisUtil;
 import com.help.hyozason_backend.service.helpoauth.HelpOauthService;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import java.io.*;
-import java.util.List;
 
 
 @Service
@@ -51,6 +47,7 @@ public class HelpUserService  {
 
     private HelpUserEntity helpUserEntity = new HelpUserEntity();
 
+    private HelpRewardEntity helpRewardEntity = new HelpRewardEntity();
 
 
     public void save(HelpUserEntity member) {
@@ -60,6 +57,10 @@ public class HelpUserService  {
         regionRepository.save(region);
     }
 
+
+    public void saveReward(HelpRewardEntity reward){
+        rewardRepository.save(reward);
+    }
     public HelpUserEntity register( MemberRequestDto.RegisterMember registerMember ) {
         helpUserEntity.setUserToken( helpUserDTO.getUserToken());
         helpUserEntity.setUserEmail( registerMember.getUserEmail());
@@ -70,25 +71,38 @@ public class HelpUserService  {
     }
 
     public void registerRegion( MemberRequestDto.RegisterMember registerMember ) {
+        HelpRegionEntity helpRegionEntity = new HelpRegionEntity(); // 객체를 초기화
+        helpRegionEntity.setUserEmail(registerMember.getUserEmail());
         helpRegionEntity.setRegionInfo1(registerMember.getRegionInfo1());
         helpRegionEntity.setRegionInfo2(registerMember.getRegionInfo2());
-        helpRegionEntity.setUserEmail(helpUserDTO.getUserEmail());
-        saveRegion(helpRegionEntity);
+        saveRegion(helpRegionEntity); // 저장ㅍ
+    }
 
+    public void registerReward(MemberRequestDto.RegisterMember registerMember ){
+        System.out.println(helpUserDTO); //여기서 null 값이 들어가이ㅗ
+        if (helpUserDTO.getUserEmail().equals(registerMember.getUserEmail())) {
+            helpRewardEntity.setUserEmail(registerMember.getUserEmail());
+            helpRewardEntity.setRewardScore(0);
+            saveReward(helpRewardEntity);
+        }
     }
 
     public MemberResponseDto.TokenInfo registerMember(  MemberRequestDto.RegisterMember registerMember  ) {
         checkRegister(registerMember); //DB에서 이메일 비교
-        if (helpUserDTO.getUserEmail().equals(registerMember.getUserEmail())) {
+
+        if (helpUserDTO != null && helpUserDTO.getUserEmail() != null &&
+                helpUserDTO.getUserEmail().equals(registerMember.getUserEmail())) {
             HelpUserEntity member = register(registerMember);
-            MemberResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserEmail()); //토큰 발급
-            member.setUserToken(tokenInfo.getRefreshToken()); //refreshToekn Entity 에 set
-            save(member); //member 저장 -> 토큰 때문에 재저장
-            //프론트 측에서 주소 입력 받을 경우에만 회원가입 하도록 설정해야함 -> 여기서 에러 처리 어려움...
-             registerRegion(registerMember);
+            MemberResponseDto.TokenInfo tokenInfo = jwtTokenProvider.generateToken(member.getUserEmail());
+            member.setUserToken(tokenInfo.getRefreshToken());
+
+
+            save(member);
+            registerRegion(registerMember);
+            registerReward(registerMember);
             return tokenInfo;
-        }else{
-            BaseException exception = new BaseException(MemberErrorCode.INVALID_MEMBER);
+        } else {
+            BaseException exception = new BaseException(MemberErrorCode.INCORRECT_INFO);
             throw exception;
         }
     }
@@ -97,10 +111,13 @@ public class HelpUserService  {
     public MemberResponseDto.LoginInfo socialLogin(
                                                    MemberRequestDto.SocialLoginToken socialLoginToken) throws BaseException, IOException {
         String idToken = socialLoginToken.getIdToken();
-        helpUserDTO= helpOauthService.getKaKaoEmail(helpOauthService.getKaKaoAccessToken(idToken),helpUserDTO);
-        HelpUserEntity member = helpUserRepository.findByUserEmail(helpUserDTO.getUserEmail());
-        HelpRegionEntity region =regionRepository.findByUserEmail(helpUserDTO.getUserEmail());
-        HelpRewardEntity reward = rewardRepository.findByUserEmail(helpUserDTO.getUserEmail());
+        HelpUserDTO newHelpUserDTO = helpOauthService.getKaKaoEmail(helpOauthService.getKaKaoAccessToken(idToken), new HelpUserDTO());
+
+        helpUserDTO.setUserEmail(newHelpUserDTO.getUserEmail());
+        helpUserDTO.setUserName(newHelpUserDTO.getUserName());
+
+
+        HelpUserEntity member = helpUserRepository.findByUserEmail(newHelpUserDTO.getUserEmail());
 
         if ( member != null) {
             //토큰 설정
@@ -110,6 +127,8 @@ public class HelpUserService  {
 
 
                 if ("HELPER".equals(member.getUserRole())) {
+                    HelpRegionEntity region =regionRepository.findByUserEmail(helpUserDTO.getUserEmail());
+                    HelpRewardEntity reward = rewardRepository.findByUserEmail(helpUserDTO.getUserEmail());
                     MemberResponseDto.LoginInfo  helperInfo = MemberResponseDto.LoginInfo.helperLogin(tokenInfo, member.getUserRole(), member.getUserName(), region.getRegionInfo1(), reward.getRewardScore());
                     return helperInfo;
                 }
