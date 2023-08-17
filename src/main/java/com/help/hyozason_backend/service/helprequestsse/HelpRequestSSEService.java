@@ -108,7 +108,7 @@ public class HelpRequestSSEService {
     @Transactional
     public String acceptHelpRequest(Long helpBoardId) {
 
-        HelpBoardEntity helpBoardentity = helpBoardRepository.findById(helpBoardId)
+        HelpBoardEntity helpBoardentity = helpBoardRepository.findByhelpId(helpBoardId)
                 .orElseThrow(() -> new EntityNotFoundException("HelpBoard not found"));
 
         //Board 가 존재하면 Board의 accept 값을 accept 로 변경
