@@ -6,9 +6,10 @@ import com.help.hyozason_backend.entity.helpuser.HelpUserEntity;
 import com.help.hyozason_backend.exception.BaseException;
 import com.help.hyozason_backend.security.auth.CurrentMember;
 import com.help.hyozason_backend.security.jwt.JwtTokenProvider;
+
 import com.help.hyozason_backend.service.helpuser.HelpUserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
