@@ -18,7 +18,7 @@ public class HelpLocationEntity {
     @Column(name="locationInfo")
     String locationInfo;
 
-    @Column(name="createdAt", nullable = false)
+    @Column(name="createdAt")
     LocalDateTime createdAt;
 
     @Column(name = "userEmail")

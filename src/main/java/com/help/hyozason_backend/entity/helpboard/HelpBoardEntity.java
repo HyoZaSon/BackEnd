@@ -30,7 +30,7 @@ public class HelpBoardEntity {
     @Column(name = "helpAccept")
     String helpAccept;
 
-    @Column(name="createdAt", nullable = false)
+    @Column(name="createdAt")
     LocalDateTime createdAt;
 
     @Column(name = "userEmail")

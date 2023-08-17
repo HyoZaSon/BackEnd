@@ -1,5 +1,6 @@
 package com.help.hyozason_backend.exception;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -23,3 +24,4 @@ public enum MemberErrorCode implements ErrorCode {
     private final String message;
     private final HttpStatus status;
 }
+

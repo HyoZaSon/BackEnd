@@ -14,7 +14,7 @@ public class MyHandShakeInterceptor implements HandshakeInterceptor {
         // 클라이언트에서 전달한 JWT 토큰을 가져와서 속성에 저장
         String token = request.getHeaders().getFirst("Authorization");
         attributes.put("Authorization", token);
-        System.out.println("토큰값 :"+token);
+        //System.out.println("토큰값 :"+token);
         return true;
     }
 

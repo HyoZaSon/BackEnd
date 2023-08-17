@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/*
 @Slf4j
 @Component
 public class HelpRequestHandler extends TextWebSocketHandler {
@@ -46,7 +47,7 @@ public class HelpRequestHandler extends TextWebSocketHandler {
      * 웹 소켓 핸들러에서 사용자 B의 수락 여부 및 정보를 처리하고,  이를 HelpRequestService를 이용하여 도움 요청 글의 상태를 업데이트하고 필요한 처리를 합니다.
      * 사용자 A에게 수락 여부 및 사용자 B의 정보를 웹 소켓을 통해 알립니다.
      *
-    **/
+
 
     //웹 소켓 연결
     @Override
@@ -98,14 +99,14 @@ public class HelpRequestHandler extends TextWebSocketHandler {
                 String msg = "도움 요청이 수락되었습니다!";
                 sendNotificationToUser(msg, targetSession);
             }
-         ***/
+
 
 
 
     };
 
 
-
+/*
     //여기부턴 gpt라서 수정해야함
 
     // 사용자 A가 도움 요청을 게시하면 사용자 B에게 알림을 보내는 메소드
@@ -123,7 +124,8 @@ public class HelpRequestHandler extends TextWebSocketHandler {
 
 
     }
-
+*/
+/*
     // 사용자 A가 도움 요청을 거절하면 사용자 A에게 알림을 보내는 메소드
     public void rejectHelpRequest(Long helpBoardId) {
         String message = "도움 요청이 거절되었습니다.";
@@ -163,3 +165,4 @@ public class HelpRequestHandler extends TextWebSocketHandler {
     public void handleTransportError(WebSocketSession session,Throwable throwable){};
 }
 
+*/
