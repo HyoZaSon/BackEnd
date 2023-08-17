@@ -94,7 +94,7 @@ public class HelpRequestSSEController {
     public ResponseEntity<Map<String, Serializable>> requestHelp(@RequestBody HelpRequestDTO helpRequestDTO, HttpServletRequest request) throws Exception {
         try {
             //토큰 값 log
-            System.out.println("token :"+request.getHeader("Authorization"));
+            System.out.println("token :"+request.getHeader("Authorization")); //여기서 토큰 값이 잘못전달되고 있는데
             //String userEmail = jwtController.getUserEmail(request);
             String userEmail = jwtTokenProvider.getMemberIdByToken(request.getHeader("Authorization"));
             if (userEmail != null && !userEmail.isEmpty()) {
@@ -116,7 +116,7 @@ public class HelpRequestSSEController {
      * 요청 수락
      * */
     @PostMapping("/acceptHelp/{helpBoardId}")
-    public ResponseEntity<Map<String, Serializable>>acceptHelpRequest(@PathVariable Long helpBoardId, HttpServletRequest request) {
+    public ResponseEntity<Map<String, Object>> acceptHelpRequest(@PathVariable Long helpBoardId, HttpServletRequest request) {
         try {
             //B 회원 정보 추출
             System.out.println("helper token :"+request.getHeader("Authorization"));
@@ -129,7 +129,8 @@ public class HelpRequestSSEController {
                 String helpEmail = helpRequestSSEService.acceptHelpRequest(helpBoardId);
                 if (helpEmail != null) {
                     helpRequestSSEService.notifyUserHelpAccepted(helpBoardId,helperUserEntity,helpEmail);
-                    return ResponseEntity.ok(Map.of("message", "도움 요청이 수락되었습니다", "helpBoardId", helpBoardId));
+                    //여기에 helper 정보도 보내기
+                    return ResponseEntity.ok(Map.of("message", "도움 요청이 수락되었습니다", "helpBoardId", helpBoardId ,"helperUserEntity",helperUserEntity));
 
                 } else {
                     helpRequestSSEService.notifyUserHelpDenided(helpBoardId, helperUserEntity);
