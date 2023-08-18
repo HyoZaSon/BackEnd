@@ -13,7 +13,7 @@ public class CorsConfig {
 public CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("http://223.130.139.203:3000");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
